@@ -272,3 +272,59 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("Post Deleted")
 	}
 }
+
+// Get All Comments
+func GetAllComments(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "aplication/json")
+
+	var comments m.GetComments
+
+	// Query get all comments
+	rows, err := mainDB.Query("SELECT * FROM comments AS c INNER JOIN ( SELECT id, username, email FROM users) u ON c.user_id = u.id")
+	h.CheckErr(err)
+
+	for rows.Next() {
+		var comment m.GetComment
+		var author m.Author
+
+		err = rows.Scan(&comment.ID, &comment.Comment, &comment.PostID, &comment.UserID, &author.ID, &author.UserName, &author.Email)
+		h.CheckErr(err)
+
+		comment.CommentAuthor = author
+		comments = append(comments, comment)
+	}
+
+	json.NewEncoder(w).Encode(comments)
+}
+
+// Added Comment
+func AddComment(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "aplication/json")
+
+	var addComment m.AddComment
+
+	// Get post content from body of request
+	_ = json.NewDecoder(r.Body).Decode(&addComment)
+
+	// Query prepare for new comment
+	stmt, err := mainDB.Prepare("INSERT INTO comments( comment, post_id, user_id) VALUES(?, ?, ?)")
+	h.CheckErr(err)
+
+	// Query execute for new comment
+	result, errExec := stmt.Exec(&addComment.Comment, &addComment.PostID, &addComment.UserID)
+	h.CheckErr(errExec)
+
+	rows, errRow := result.RowsAffected()
+	h.CheckErr(errRow)
+
+	// Checking if post doesn't exist
+	if rows == 0 {
+		var error m.Error
+		error.Error = true
+		error.Message = "Something went wrong"
+		json.NewEncoder(w).Encode(error)
+		return
+	} else {
+		json.NewEncoder(w).Encode("Comment Added")
+	}
+}

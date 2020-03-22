@@ -22,6 +22,10 @@ func SetPostRoutes(router *mux.Router) *mux.Router {
 	router.Handle("/api/posts/{id}", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.UpdatePost))).Methods("PUT")
 	// Delete Post
 	router.Handle("/api/posts/{id}", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.DeletePost))).Methods("DELETE")
+	// Get All Comments
+	router.Handle("/api/comments", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.GetAllComments))).Methods("GET")
+	// Add Comment
+	router.Handle("/api/comments", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.AddComment))).Methods("POST")
 
 	return router
 }

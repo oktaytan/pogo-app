@@ -7,15 +7,6 @@ type Author struct {
 	Email    string `json:"email"`
 }
 
-// Post Comment Struct
-type Comment struct {
-	ID            string `json:"id"`
-	Comment       string `json:"comment"`
-	CommentAuthor Author `json:"author"`
-}
-
-type Comments []Comment
-
 // Post Struct
 type Post struct {
 	ID        string   `json:"id"`
@@ -67,3 +58,30 @@ type Error struct {
 	Error   bool   `json:"error"`
 	Message string `json:"message"`
 }
+
+// Post Comment Struct
+type Comment struct {
+	ID            string `json:"id"`
+	Comment       string `json:"comment"`
+	CommentAuthor Author `json:"author"`
+}
+
+type Comments []Comment
+
+// Comment Struct
+type AddComment struct {
+	Comment string `json:"comment"`
+	PostID  string `json:"post_id"`
+	UserID  string `json:"user_id"`
+}
+
+// Comment Struct
+type GetComment struct {
+	ID            string `json:"id"`
+	Comment       string `json:"comment"`
+	PostID        string `json:"post_id"`
+	UserID        string `json:"user_id"`
+	CommentAuthor Author `json:"author"`
+}
+
+type GetComments []GetComment
