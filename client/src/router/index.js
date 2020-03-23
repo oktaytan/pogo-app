@@ -9,17 +9,18 @@ Vue.use(VueRouter);
 const routes = [
 	{
 		path: '/',
-		name: 'Home',
-		component: Home
+		name: 'home',
+		component: Home,
+		meta: { requiresAuth: true }
 	},
 	{
 		path: '/login',
-		name: 'Login',
+		name: 'login',
 		component: Login
 	},
 	{
 		path: '/register',
-		name: 'Register',
+		name: 'register',
 		component: Register
 	}
 ];
@@ -28,6 +29,19 @@ const router = new VueRouter({
 	mode: 'history',
 	base: process.env.BASE_URL,
 	routes
+});
+
+router.beforeEach((to, from, next) => {
+	const token = JSON.parse(localStorage.getItem('token'));
+	if (to.meta.requiresAuth) {
+		if (!token) {
+			next({ name: 'login' });
+		} else {
+			next();
+		}
+	} else {
+		next();
+	}
 });
 
 export default router;

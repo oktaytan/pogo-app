@@ -4,11 +4,10 @@ export const ax = axios.create({
 	baseURL: 'http://localhost:5000/api'
 });
 
-// if (localStorage.getItem('token') !== null) {
-// }
-
-ax.defaults.headers.common['Authorization'] =
-	'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhd2lzIiwicGFzc3dvcmQiOiIxMjM0In0.Ez2zUOKku0l3GCI61eC4GJl6bPD0BL1Bud4wnBc3Bdw';
+if (localStorage.getItem('token') !== null) {
+	ax.defaults.headers.common['Authorization'] =
+		'Bearer ' + JSON.parse(localStorage.getItem('token'));
+}
 
 window.ax = ax;
 
