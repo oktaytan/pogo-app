@@ -175,10 +175,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 	isID, _ := strconv.ParseInt(post.ID, 10, 0)
 
 	if isID == 0 {
-		var error m.Error
-		error.Error = true
-		error.Message = "Post not found"
-		json.NewEncoder(w).Encode(error)
+		json.NewEncoder(w).Encode(h.Error("Post not found"))
 		return
 	} else {
 		json.NewEncoder(w).Encode(post)
@@ -233,10 +230,7 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
 
 	// Checking if post doesn't exist
 	if rowAffected == 0 {
-		var error m.Error
-		error.Error = true
-		error.Message = "Post not found"
-		json.NewEncoder(w).Encode(error)
+		json.NewEncoder(w).Encode(h.Error("Post not found"))
 		return
 	} else {
 		json.NewEncoder(w).Encode(updatedPost)
@@ -263,10 +257,7 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 
 	// Checking if post doesn't exist
 	if rows == 0 {
-		var error m.Error
-		error.Error = true
-		error.Message = "Post not found"
-		json.NewEncoder(w).Encode(error)
+		json.NewEncoder(w).Encode(h.Error("Post not found"))
 		return
 	} else {
 		json.NewEncoder(w).Encode("Post Deleted")
@@ -319,10 +310,7 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 
 	// Checking if post doesn't exist
 	if rows == 0 {
-		var error m.Error
-		error.Error = true
-		error.Message = "Something went wrong"
-		json.NewEncoder(w).Encode(error)
+		json.NewEncoder(w).Encode(h.Error("Something went wrong"))
 		return
 	} else {
 		json.NewEncoder(w).Encode("Comment Added")

@@ -44,25 +44,38 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// Get new user content from body of request
 	_ = json.NewDecoder(r.Body).Decode(&registerUser)
 
-	// Check to user exists
-	stmtCheck, errCheck := mainDB.Prepare("SELECT COUNT(email) FROM users AS u WHERE u.email = ?")
-	h.CheckErr(errCheck)
+	// Check to username exists
+	stmtCheckUsername, errCheckUsername := mainDB.Prepare("SELECT COUNT(username) FROM users AS u WHERE u.username = ?")
+	h.CheckErr(errCheckUsername)
 
-	rowsCount, errQuery := stmtCheck.Query(registerUser.Email)
-	h.CheckErr(errQuery)
+	rowsCountUsername, errQueryUsername := stmtCheckUsername.Query(registerUser.UserName)
+	h.CheckErr(errQueryUsername)
 
-	var count int
+	var countUsername int
 
-	for rowsCount.Next() {
-		errCount := rowsCount.Scan(&count)
-		h.CheckErr(errCount)
+	for rowsCountUsername.Next() {
+		errCountUsername := rowsCountUsername.Scan(&countUsername)
+		h.CheckErr(errCountUsername)
 	}
 
-	if count > 0 {
-		var error m.Error
-		error.Error = true
-		error.Message = "User already exists"
-		json.NewEncoder(w).Encode(error)
+	// Check to email exists
+	stmtCheckEmail, errCheckEmail := mainDB.Prepare("SELECT COUNT(email) FROM users AS u WHERE u.email = ?")
+	h.CheckErr(errCheckEmail)
+
+	rowsCountEmail, errQueryEmail := stmtCheckEmail.Query(registerUser.Email)
+	h.CheckErr(errQueryEmail)
+
+	var countEmail int
+
+	for rowsCountEmail.Next() {
+		errCountEmail := rowsCountEmail.Scan(&countEmail)
+		h.CheckErr(errCountEmail)
+	}
+
+	if countUsername > 0 {
+		json.NewEncoder(w).Encode(h.Error("Username already registered"))
+	} else if countEmail > 0 {
+		json.NewEncoder(w).Encode(h.Error("Email already registered"))
 	} else {
 		// Checking if passwords don't match
 		if registerUser.Password != registerUser.Password2 {
@@ -91,10 +104,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			h.CheckErr(errLast)
 
 			if rowAffected == 0 {
-				var error m.Error
-				error.Error = true
-				error.Message = "Something went wrong"
-				json.NewEncoder(w).Encode(error)
+				json.NewEncoder(w).Encode(h.Error("Something went wrong"))
 				return
 			} else {
 				var user m.User
