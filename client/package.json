@@ -12,6 +12,7 @@
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
+    "vue-infinite-scroll": "^2.0.2",
     "vue-router": "^3.1.5",
     "vuex": "^3.1.2"
   },
@@ -22,6 +23,7 @@
     "@vue/cli-service": "~4.2.0",
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "vue-textarea-autosize": "^1.1.1"
   }
 }

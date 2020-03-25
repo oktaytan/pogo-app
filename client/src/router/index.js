@@ -3,6 +3,9 @@ import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
+import Posts from '../components/Posts.vue';
+import Settings from '../components/Settings.vue';
+import Profile from '../components/Profile.vue';
 
 Vue.use(VueRouter);
 
@@ -11,7 +14,21 @@ const routes = [
 		path: '/',
 		name: 'home',
 		component: Home,
-		meta: { requiresAuth: true }
+		meta: { requiresAuth: false },
+		children: [
+			{
+				path: '/profile',
+				name: 'profile',
+				component: Profile,
+				meta: { requiresAuth: false }
+			},
+			{
+				path: '/settings',
+				name: 'settings',
+				component: Settings,
+				meta: { requiresAuth: false }
+			}
+		]
 	},
 	{
 		path: '/login',

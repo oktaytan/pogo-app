@@ -30,7 +30,7 @@
 		span {
 			font-size: 1.4rem;
 			margin-left: 1.4rem;
-			color: #829ab1;
+			color: #ffffff;
 		}
 	}
 	.custom_form {
@@ -46,4 +46,375 @@
 	display: inline-block;
 	transform-origin: center;
 	opacity: 1;
+}
+
+// Home Layaut
+.home_layout {
+	overflow: hidden;
+
+	&_header {
+		display: none;
+		align-items: center;
+		justify-content: space-between;
+		height: 70px;
+		width: 100%;
+		padding: 0 1rem;
+		border-bottom: 2px solid lighten(@body-background, 10%);
+
+		@media screen and (max-width: 576px) {
+			display: flex;
+		}
+
+		.ant-menu-item {
+			padding: 0;
+			margin-left: 1.3rem;
+		}
+
+		.logo {
+			display: flex;
+
+			img {
+				margin-right: 1rem;
+			}
+		}
+	}
+
+	&_sidebar {
+		overflow: auto;
+		height: 100vh;
+		left: 0;
+		width: 15%;
+
+		@media screen and (max-width: 576px) {
+			display: none;
+		}
+		@media screen and (max-height: 576px) {
+			display: none;
+		}
+
+		.logo {
+			padding: 0 1rem;
+			margin: 0;
+			height: 97px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background: none;
+
+			&_link {
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				text-decoration: none;
+
+				img {
+					width: 30%;
+					margin-right: 1rem;
+				}
+
+				span {
+					font-size: 1.4rem;
+				}
+			}
+		}
+
+		&--left {
+			padding: 1rem;
+			min-width: 400px;
+
+			@media screen and (max-width: 992px) {
+				display: none;
+			}
+		}
+	}
+
+	&_content {
+		width: 100%;
+
+		&_header {
+			padding: 1rem 2rem;
+			height: auto;
+			border-bottom: 10px solid lighten(@body-background, 10%);
+
+			.post_form {
+				width: 100%;
+				display: flex;
+				justify-content: flex-start;
+
+				&_items {
+					width: 100%;
+					display: flex;
+					justify-content: space-between;
+					align-items: flex-end;
+					flex: 1;
+
+					@media screen and (max-width: 576px) {
+						flex-direction: column;
+					}
+
+					&_data {
+						width: 100%;
+						flex: 2;
+						margin-right: 1rem;
+					}
+
+					.ant-row {
+						margin-bottom: 0;
+
+						textarea {
+							resize: none;
+							border: none;
+							width: 100%;
+							padding: 0 1.2rem;
+							line-height: 1.4;
+
+							&::placeholder {
+								opacity: 0.7;
+								color: #fff;
+							}
+						}
+					}
+					.new_post_submit_btn {
+						font-weight: 600;
+
+						&:disabled {
+							background-color: @primary-color;
+							border: none;
+							color: darken(@primary-color, 100%);
+							opacity: 0.3;
+						}
+					}
+				}
+				.new_post_input {
+					background-color: transparent;
+					font-size: 1.1rem;
+					margin-bottom: 0;
+
+					&:focus {
+						outline: none;
+						border: none;
+						box-shadow: none;
+					}
+				}
+
+				.header_avatar {
+					flex-shrink: 0;
+					background-color: lighten(@body-background, 10%);
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					font-size: 1.3rem;
+					width: 52px;
+					height: 52px;
+					margin-right: 1rem;
+				}
+			}
+		}
+
+		&_view {
+			overflow-x: hidden;
+			overflow-y: scroll;
+			min-height: 80vh;
+		}
+	}
+}
+
+.posts_container {
+	overflow: auto;
+	padding: 0;
+	height: 78vh;
+
+	.ant-list-item-content {
+		margin: 0;
+	}
+
+	@media screen and (max-width: 576px) {
+		.ant-list-item-meta-avatar {
+			margin-right: 0;
+		}
+	}
+
+	.ant-list-item-meta-description {
+		color: #ffffff;
+	}
+
+	.ant-list-item-action > li {
+		color: #ffffff;
+	}
+
+	.ant-avatar {
+		width: 52px;
+		height: 52px;
+	}
+
+	.ant-list-split .ant-list-item {
+		border-bottom: 2px solid lighten(@body-background, 10%);
+		padding: 2rem;
+		cursor: pointer;
+		transition: background 0.2s ease-out;
+
+		@media screen and (max-width: 576px) {
+			padding: 2rem 2rem 4rem 2rem;
+		}
+
+		&:hover {
+			background: lighten(@body-background, 2%);
+		}
+	}
+
+	.posts_loading {
+		position: absolute;
+		bottom: 40px;
+		width: 100%;
+		text-align: center;
+	}
+
+	.post_avatar {
+		background-color: lighten(@body-background, 10%);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 1.3rem;
+
+		@media screen and (max-width: 576px) {
+			display: none;
+		}
+	}
+}
+
+.post_item {
+	position: relative;
+}
+
+.post_actions {
+	width: 100%;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	margin-top: 1rem;
+	position: absolute;
+	top: -0.5rem;
+	right: 0;
+
+	@media screen and (max-width: 576px) {
+		top: initial;
+		right: initial;
+		bottom: 0.7rem;
+		left: 0;
+		justify-content: center;
+	}
+
+	&_icon {
+		color: lighten(@body-background, 15%);
+		font-size: 1rem;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 38px;
+		height: 38px;
+		border-radius: 50%;
+		transition: all 0.2s ease-out;
+		margin: 0 0.5rem;
+		animation-duration: 0.3s;
+		animation-timing-function: ease-out;
+		animation-fill-mode: forwards;
+
+		&.like:hover {
+			background-color: rgba(#f1c40f, 0.2);
+			color: lighten(#f1c40f, 10%);
+		}
+
+		&.comment:hover {
+			background-color: rgba(#2ecc71, 0.2);
+			color: lighten(#2ecc71, 10%);
+		}
+
+		&.share:hover {
+			background-color: rgba(#f5f6fa, 0.2);
+			color: lighten(#f5f6fa, 10%);
+		}
+
+		@keyframes bounce {
+			0% {
+				transform: scale(1);
+			}
+			50% {
+				transform: scale(1.5);
+			}
+			100% {
+				transform: scale(1);
+			}
+		}
+	}
+}
+
+// Most liked
+.most_liked_posts {
+	margin: 1.5rem 0;
+
+	&_title {
+		margin: 0;
+		font-size: 1rem;
+	}
+
+	&_like {
+		margin: 0;
+		opacity: 0.5;
+		font-size: 0.8rem;
+	}
+
+	&_action {
+		position: absolute;
+		top: 50%;
+		right: 1rem;
+		transform: translateY(-50%);
+		font-size: 1.2rem;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		transition: all 0.2s ease-out;
+
+		&:hover {
+			background-color: rgba(#2ecc71, 0.2);
+			color: lighten(#2ecc71, 10%);
+		}
+	}
+
+	.ant-list-header {
+		border-bottom: 2px solid lighten(@body-background, 10%);
+		background-color: lighten(@body-background, 3%);
+		padding: 0.5rem 1.5rem;
+		border-top-right-radius: 4px;
+		border-top-left-radius: 4px;
+		font-size: 1.1rem;
+		opacity: 0.5;
+		text-align: left;
+	}
+
+	.ant-list-item-content {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.ant-list-split .ant-list-item {
+		border-bottom: 2px solid lighten(@body-background, 10%);
+		background-color: lighten(@body-background, 1%);
+		padding: 1rem 1.5rem;
+		cursor: pointer;
+		transition: background 0.2s ease-out;
+		position: relative;
+
+		&:hover {
+			background: @body-background;
+		}
+
+		&:last-child {
+			border-bottom: none;
+			border-bottom-right-radius: 4px;
+			border-bottom-left-radius: 4px;
+		}
+	}
 }

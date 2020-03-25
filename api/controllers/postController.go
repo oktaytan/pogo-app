@@ -14,14 +14,14 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// DB initiali<e
+// Veritabanı bağlantısı yapılıyor
 var mainDB = db.InitDB()
 
-// All posts
+// Tüm gönderiler
 func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
-	// Query
+	// Tüm gönderiler için sql sorgusu çalıştırılıyor
 	rows, err := mainDB.Query("SELECT * FROM posts AS p INNER JOIN (SELECT id, username, email FROM users) AS u ON p.user_id = u.id ORDER BY p.created_at DESC")
 
 	h.CheckErr(err)
@@ -42,9 +42,12 @@ func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 
 		post.Author = author
 
+		// Her gönderiye ait yorumları getirecek sorgu hazırlanıyor
 		stmt, err := mainDB.Prepare("SELECT * FROM comments AS c INNER JOIN ( SELECT id, username, email FROM users) u ON c.user_id = u.id WHERE c.post_id = ?")
 
 		var commentsRow *sql.Rows
+
+		// Her gönderiye ait yorumları getirecek sorgu çalıştırılıyor
 		commentsRow, err = stmt.Query(post.ID)
 
 		for commentsRow.Next() {
@@ -63,18 +66,18 @@ func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(posts)
 }
 
-// Only user's posts
+// Kullanıcının kendi göderileri
 func GetOwnPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
-	// Get post id from paramaters of request
+	// Kullanıcı id' si istek parametresinden alınıyor
 	params := mux.Vars(r)
 
-	// Query prepare
+	// Kullanıcının kendi gönderilerini getirecek sorgu hazırlanıyor
 	stmt, err := mainDB.Prepare("SELECT posts.id, posts.title, posts.body, posts.created_at, posts.updated_at, posts.user_id, posts.likes, users.id FROM posts INNER JOIN users ON users.id = posts.user_id WHERE users.username = ? ORDER BY posts.created_at DESC")
 	h.CheckErr(err)
 
-	// Query execute
+	// Kullanıcının kendi gönderilerini getirecek sorgu çalıştırılıyor
 	rows, errQuery := stmt.Query(params["username"])
 	h.CheckErr(errQuery)
 
@@ -91,13 +94,13 @@ func GetOwnPosts(w http.ResponseWriter, r *http.Request) {
 		err = rows.Scan(&post.ID, &post.Title, &post.Body, &post.CreatedAt, &post.UpdatedAt, &post_user_id, &post.Likes, &user_id)
 		h.CheckErr(err)
 
-		// Query prepare for comments
+		// Kullanıcının gönderilerine yapılmış yorumları getirecek sorgu hazırlanıyor
 		stmt, err := mainDB.Prepare("SELECT * FROM comments AS c INNER JOIN ( SELECT id, username, email FROM users) u ON c.user_id = u.id WHERE c.post_id = ?")
 		h.CheckErr(err)
 
 		var commentsRow *sql.Rows
 
-		// Query execute for comments
+		// Kullanıcının gönderilerine yapılmış yorumları getirecek sorgu çalıştırılıyor
 		commentsRow, err = stmt.Query(post.ID)
 		h.CheckErr(err)
 
@@ -119,18 +122,18 @@ func GetOwnPosts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ownPosts)
 }
 
-// Get post by id
+// Seçili ID' ye göre gönderi getirme
 func GetPost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
-	// Get post id from paramaters of request
+	// Getirilecek gönderinin id' si istek parametresinden alınıyor
 	params := mux.Vars(r)
 
-	// Query prepare for posts
+	// Id' si belirli olan göderiyi getirecek sorgu hazırlanıyor
 	stmt, err := mainDB.Prepare("SELECT * FROM posts AS p INNER JOIN (SELECT id, username, email from users) AS u ON p.user_id = u.id WHERE p.id = ?")
 	h.CheckErr(err)
 
-	// Query execute for posts
+	// Id' si belirli olan göderiyi getirecek sorgu çalıştırlıyor
 	rows, errQuery := stmt.Query(params["id"])
 	h.CheckErr(errQuery)
 
@@ -150,12 +153,12 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 		var stmtNew *sql.Stmt
 
-		// Query prepare for comments
+		// Gönderiye ait yorumları getirecek sorgu hazırlanıyor
 		stmtNew, err := mainDB.Prepare("SELECT * FROM comments AS c INNER JOIN ( SELECT id, username, email FROM users) u ON c.user_id = u.id WHERE c.post_id = ?")
 
 		var commentsRow *sql.Rows
 
-		// Query execute for comments
+		// Gönderiye ait yorumları getirecek sorgu çalıştırılıyor
 		commentsRow, err = stmtNew.Query(post.ID)
 
 		for commentsRow.Next() {
@@ -171,106 +174,106 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Checking if post doesn't exist
+	// Gönderinin veritabanında olup olmadığı kontrol ediliyor
 	isID, _ := strconv.ParseInt(post.ID, 10, 0)
 
 	if isID == 0 {
-		json.NewEncoder(w).Encode(h.Error("Post not found"))
+		json.NewEncoder(w).Encode(h.Error("Gönderi bulunamadı!"))
 		return
 	} else {
 		json.NewEncoder(w).Encode(post)
 	}
 }
 
-// Create Post
+// Gönderi oluşturma
 func CreatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
 	var post m.SendPost
 
-	// Get post content from body of request
+	// Gönderini içeriği istek gövdesinden alınıyor
 	_ = json.NewDecoder(r.Body).Decode(&post)
 
-	// Generate random id for new post
+	// Yeni gönderi için id oluşturuluyor
 	post.ID = strconv.Itoa(rand.Intn(100000000000))
 
-	// Query prepare for new post
+	// Yeni gönderiyi veritabanına ekleyecek sorgu hazırlanıyor
 	stmt, err := mainDB.Prepare("INSERT INTO posts(id, title, body, user_id) VALUES (?, ?, ?, ?)")
 	h.CheckErr(err)
 
-	// Query execute for new post
+	// Yeni gönderiyi veritabanına ekleyecek sorgu çalıştırılıyor
 	_, errExec := stmt.Exec(post.ID, post.Title, post.Body, post.UserID)
 	h.CheckErr(errExec)
 
 	json.NewEncoder(w).Encode(post)
 }
 
-// Update Post
+// Gönderi güncelleme
 func UpdatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
-	// Get post id from paramaters of request
+	// Güncellenecek gönderinin id' si istek parametresinden alınıyor
 	params := mux.Vars(r)
 
 	var updatedPost m.UpdatedPost
 
-	// Get post content from body of request
+	// Güncellenecek gönderinin yeni içeriği istek gövdesinden alınıyor
 	_ = json.NewDecoder(r.Body).Decode(&updatedPost)
 
-	// Query prepare for updated post
+	// Gönderiyi güncelleyecek sorgu hazırlanıyor
 	stmt, err := mainDB.Prepare("UPDATE posts SET id = ?, title = ?, body = ?, created_at = ?, updated_at = ?, user_id = ?, likes = ? WHERE id = ?")
 	h.CheckErr(err)
 
-	// Query execute for updated post
+	// Gönderiyi güncelleyecek sorgu çalıştırılıyor
 	result, errExec := stmt.Exec(updatedPost.ID, updatedPost.Title, updatedPost.Body, updatedPost.CreatedAt, updatedPost.UpdatedAt, updatedPost.UserID, updatedPost.Likes, params["id"])
 	h.CheckErr(errExec)
 
 	rowAffected, errLast := result.RowsAffected()
 	h.CheckErr(errLast)
 
-	// Checking if post doesn't exist
+	// Gönderinin veritabanında olup olmadığı kontrol ediliyor
 	if rowAffected == 0 {
-		json.NewEncoder(w).Encode(h.Error("Post not found"))
+		json.NewEncoder(w).Encode(h.Error("Gönderi bulunamadı!"))
 		return
 	} else {
 		json.NewEncoder(w).Encode(updatedPost)
 	}
 }
 
-// Delete Post
+// Gönderi silme
 func DeletePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
-	// Get post id from paramaters of request
+	// Silinecek gönderinin id' si istek parametresinden alınıyor
 	params := mux.Vars(r)
 
-	// Query prepare for deleted post
+	// Gönderiyi silecek sorgu hazırlanıyor
 	stmt, err := mainDB.Prepare("DELETE FROM posts WHERE id = ?")
 	h.CheckErr(err)
 
-	// Query execute for deleted post
+	// Gönderiyi silecek sorgu çalıştırılıyor
 	result, errExec := stmt.Exec(params["id"])
 	h.CheckErr(errExec)
 
 	rows, errRow := result.RowsAffected()
 	h.CheckErr(errRow)
 
-	// Checking if post doesn't exist
+	// Gönderinin veritabanında olup olmadığı kontrol ediliyor
 	if rows == 0 {
-		json.NewEncoder(w).Encode(h.Error("Post not found"))
+		json.NewEncoder(w).Encode(h.Error("Gönderi bulunamadı!"))
 		return
 	} else {
-		json.NewEncoder(w).Encode("Post Deleted")
+		json.NewEncoder(w).Encode("Gönderi silindi!")
 	}
 }
 
-// Get All Comments
+// Tüm yorumları getirme
 func GetAllComments(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
 	var comments m.GetComments
 
-	// Query get all comments
+	// Yorumları getirecek sorgu çalıştırılıyor
 	rows, err := mainDB.Query("SELECT * FROM comments AS c INNER JOIN ( SELECT id, username, email FROM users) u ON c.user_id = u.id")
 	h.CheckErr(err)
 
@@ -288,31 +291,31 @@ func GetAllComments(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(comments)
 }
 
-// Added Comment
+// Yeni yorum ekleme
 func AddComment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
 	var addComment m.AddComment
 
-	// Get post content from body of request
+	// Yorum içeriği istek gövdesinden alınıyor
 	_ = json.NewDecoder(r.Body).Decode(&addComment)
 
-	// Query prepare for new comment
+	// Veritabanına yorum ekleyecek sorgu hazırlanıyor
 	stmt, err := mainDB.Prepare("INSERT INTO comments( comment, post_id, user_id) VALUES(?, ?, ?)")
 	h.CheckErr(err)
 
-	// Query execute for new comment
+	// Veritabanına yorum ekleyecek sorgu çalıştırılıyor
 	result, errExec := stmt.Exec(&addComment.Comment, &addComment.PostID, &addComment.UserID)
 	h.CheckErr(errExec)
 
 	rows, errRow := result.RowsAffected()
 	h.CheckErr(errRow)
 
-	// Checking if post doesn't exist
+	// Hata kontrolü yapılıyor
 	if rows == 0 {
-		json.NewEncoder(w).Encode(h.Error("Something went wrong"))
+		json.NewEncoder(w).Encode(h.Error("Bir terslik oldu!"))
 		return
 	} else {
-		json.NewEncoder(w).Encode("Comment Added")
+		json.NewEncoder(w).Encode("Yorum eklendi.")
 	}
 }

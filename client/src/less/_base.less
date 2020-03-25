@@ -1,5 +1,4 @@
 body {
-	background-color: #f0f4f8 !important;
 	height: 100vh;
 }
 
@@ -30,4 +29,59 @@ body {
 // Transition
 .animated {
 	animation-duration: 0.3s;
+}
+
+.ant-btn {
+	border-radius: 4px;
+}
+
+.ant-input {
+	background-color: lighten(@body-background, 5%);
+	border: none;
+	border-radius: 4px;
+	padding-left: 1.2rem;
+	padding-right: 1.2rem;
+}
+
+.ant-input-search-icon {
+	color: #ffffff !important;
+	opacity: 0.5;
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
+.ant-layout {
+	background: @body-background;
+	border-left: 1px solid lighten(@body-background, 10%);
+	border-right: 1px solid lighten(@body-background, 10%);
+}
+
+.ant-layout-footer {
+	color: rgba(255, 255, 255, 0.5);
+	padding: 0 0 1rem 0;
+}
+
+.ant-menu-dark.ant-menu-inline .ant-menu-item,
+.ant-menu-dark.ant-menu-inline .ant-menu-submenu-title,
+.ant-menu-dark.ant-menu-inline .ant-menu-item .ant-menu-item-selected {
+	&:hover {
+		background-color: rgba(@primary-color, 0.2);
+	}
+}
+
+.ant-menu-dark .ant-menu-item {
+	color: #ffffff;
+	font-weight: 700;
+}
+
+.ant-menu.ant-menu-dark .ant-menu-item-selected,
+.ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
+	background-color: transparent;
+	color: @primary-color;
+}
+
+.ant-layout-sider-trigger:hover {
+	background: lighten(@body-background, 5%);
 }

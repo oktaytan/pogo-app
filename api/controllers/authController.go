@@ -12,11 +12,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// All users
+// Tüm kullanıcılar
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
-	// Query execute for all users
+	// Tüm kullanıcılar için çalışacak sorgu
 	rows, err := mainDB.Query("SELECT * FROM users")
 	h.CheckErr(err)
 
@@ -35,16 +35,16 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-// User Regsiter
+// Kullanıcı kaydı
 func Register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
 	var registerUser m.RegisterUser
 
-	// Get new user content from body of request
+	// Yeni kullanıcı bilgileri request gövedesinden alınıyor
 	_ = json.NewDecoder(r.Body).Decode(&registerUser)
 
-	// Check to username exists
+	// Kullanıcı adı veritabanında var mı diye kontrol ediliyor
 	stmtCheckUsername, errCheckUsername := mainDB.Prepare("SELECT COUNT(username) FROM users AS u WHERE u.username = ?")
 	h.CheckErr(errCheckUsername)
 
@@ -58,7 +58,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		h.CheckErr(errCountUsername)
 	}
 
-	// Check to email exists
+	// Email veritabanında var mı diye kontrol ediliyor
 	stmtCheckEmail, errCheckEmail := mainDB.Prepare("SELECT COUNT(email) FROM users AS u WHERE u.email = ?")
 	h.CheckErr(errCheckEmail)
 
@@ -73,48 +73,50 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if countUsername > 0 {
-		json.NewEncoder(w).Encode(h.Error("Username already registered"))
+		json.NewEncoder(w).Encode(h.Error("Bu kullanıcı adı sistemde kayıtlı!"))
 	} else if countEmail > 0 {
-		json.NewEncoder(w).Encode(h.Error("Email already registered"))
+		json.NewEncoder(w).Encode(h.Error("Bu email adresi sistemde kayıtlı!"))
 	} else {
-		// Checking if passwords don't match
+
+		// Şifrelerin eşleşip eşleşmediği kontrol ediliyor
 		if registerUser.Password != registerUser.Password2 {
 			var error m.Error
 			error.Error = true
-			error.Message = "Passwords do not match"
+			error.Message = "Şifreler eşleşmiyor!"
 			json.NewEncoder(w).Encode(error)
 		} else {
 
-			// Hashed password of user
+			// Şifre hash formatına getiriliyor
 			hashPassword, errPass := bcrypt.GenerateFromPassword([]byte(registerUser.Password), bcrypt.MinCost)
 			h.CheckErr(errPass)
 
-			// Changed password which send to database
+			// Veriatabanına kaydediecek şifre hash formatındaki şifreyle değiştiriliyor
 			registerUser.Password = string(hashPassword)
 
-			// Query prepare for register user
+			// Yeni kaydedilecek kullanıcı için sorgu oluşturuluyor
 			stmt, err := mainDB.Prepare("INSERT INTO users( username, email, password ) VALUES (?, ?, ?)")
 			h.CheckErr(err)
 
-			// Query execute for register user
+			// Yeni kaydedilecek kullanıcı için sorgu çalıştırılıyor
 			result, errExec := stmt.Exec(&registerUser.UserName, &registerUser.Email, &registerUser.Password)
 			h.CheckErr(errExec)
 
 			rowAffected, errLast := result.RowsAffected()
 			h.CheckErr(errLast)
 
+			// Hata oluşması durumu kontrol ediliyor
 			if rowAffected == 0 {
-				json.NewEncoder(w).Encode(h.Error("Something went wrong"))
+				json.NewEncoder(w).Encode(h.Error("Bi terslik oldu.Tekrar deneyiniz."))
 				return
 			} else {
 				var user m.User
 				var registerOk m.RegisterOK
 
-				// Query prepare for added user
+				// Yeni eklenen kullanıcıyı veritabanından alacak sorgu hazırlanıyor
 				stmt, err := mainDB.Prepare("SELECT * FROM users AS u WHERE u.username = ?")
 				h.CheckErr(err)
 
-				// Query execute for added user
+				// Yeni eklenen kullanıcıyı veritabanından alacak sorgu çalıştırılıyor
 				rows, errExec := stmt.Query(registerUser.UserName)
 				h.CheckErr(errExec)
 
@@ -141,14 +143,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	var loginUser m.LoginUser
 
-	// Get user content from body of request
+	// Login olacak kullanıcı bilgileri request gövdesinden alınıyor
 	_ = json.NewDecoder(r.Body).Decode(&loginUser)
 
-	// Query prepare for login user
+	// Kullanıcı bilgileri veritabanından alacak sorgu hazırlanıyor
 	stmt, err := mainDB.Prepare("SELECT *, count(id) FROM users AS u WHERE u.username = ?")
 	h.CheckErr(err)
 
-	// Query execute for login user
+	// Kullanıcı bilgileri veritabanından alacak sorgu çalıştırılıyor
 	rows, errQuery := stmt.Query(loginUser.UserName)
 	h.CheckErr(errQuery)
 
@@ -159,21 +161,16 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		err = rows.Scan(&user.ID, &user.UserName, &user.Email, &password, &count)
 
-		// Checking user existing
+		// Kullanıcının veritabanında kayıtlı olup olmadığı kontrol ediliyor
 		if count == 0 {
-			var error m.Error
-			error.Error = true
-			error.Message = "User not found"
-			json.NewEncoder(w).Encode(error)
+			json.NewEncoder(w).Encode(h.Error("Bu kullanıcı adı sistemde kayıtlı değil!"))
 		} else {
 
 			errPass := bcrypt.CompareHashAndPassword([]byte(password), []byte(loginUser.Password))
 
+			// Kullancının şifresi kontrol ediliyor
 			if errPass != nil {
-				var error m.Error
-				error.Error = true
-				error.Message = "Password incorrect"
-				json.NewEncoder(w).Encode(error)
+				json.NewEncoder(w).Encode(h.Error("Şifre hatalı!"))
 			} else {
 				mySigningKey := []byte("secretKey")
 
@@ -183,7 +180,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 					jwt.StandardClaims
 				}
 
-				// Create the Claims
+				// JWT claims hazırlığı
 				claims := MyCustomClaims{
 					loginUser.UserName,
 					loginUser.Password,
