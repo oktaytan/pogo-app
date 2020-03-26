@@ -185,6 +185,118 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// En çok beğeni alan gönderiler
+func MostLikedPosts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "aplication/json")
+
+	// Gönderiler için sql sorgusu çalıştırılıyor
+	rows, err := mainDB.Query("SELECT * FROM posts AS p INNER JOIN (SELECT id, username, email FROM users) AS u ON p.user_id = u.id ORDER BY p.likes DESC")
+
+	h.CheckErr(err)
+
+	var posts m.Posts
+
+	for rows.Next() {
+		var post m.Post
+		var author m.Author
+		var user_id string
+		var post_id string
+		var comment_post_id string
+		var comments m.Comments
+
+		err = rows.Scan(&post.ID, &post.Title, &post.Body, &post.CreatedAt, &post.UpdatedAt, &user_id, &post.Likes, &author.ID, &author.UserName, &author.Email)
+
+		h.CheckErr(err)
+
+		post.Author = author
+
+		// Her gönderiye ait yorumları getirecek sorgu hazırlanıyor
+		stmt, err := mainDB.Prepare("SELECT * FROM comments AS c INNER JOIN ( SELECT id, username, email FROM users) u ON c.user_id = u.id WHERE c.post_id = ?")
+
+		var commentsRow *sql.Rows
+
+		// Her gönderiye ait yorumları getirecek sorgu çalıştırılıyor
+		commentsRow, err = stmt.Query(post.ID)
+
+		for commentsRow.Next() {
+			var comment m.Comment
+			var commentAuthor m.Author
+
+			err = commentsRow.Scan(&comment.ID, &comment.Comment, &post_id, &comment_post_id, &commentAuthor.ID, &commentAuthor.UserName, &commentAuthor.Email)
+
+			h.CheckErr(err)
+			comment.CommentAuthor = commentAuthor
+			comments = append(comments, comment)
+		}
+		post.Comments = comments
+		posts = append(posts, post)
+	}
+	json.NewEncoder(w).Encode(posts)
+}
+
+// Göderi Arama
+func SearchPosts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "aplication/json")
+
+	type SearchText struct {
+		Search string `json:"search"`
+	}
+
+	var searchText SearchText
+
+	// Gönderini içeriği istek gövdesinden alınıyor
+	_ = json.NewDecoder(r.Body).Decode(&searchText)
+
+	searchText.Search = "%" + searchText.Search + "%"
+
+	// Aranacak gönderiler için sql sorgusu hazırlanıyor
+	stmt, err := mainDB.Prepare("SELECT * FROM posts AS p INNER JOIN (SELECT id, username, email FROM users) AS u ON p.user_id = u.id WHERE p.title LIKE ? OR p.body LIKE ? ORDER BY p.created_at DESC")
+	h.CheckErr(err)
+
+	// Aranacak gönderiler için sql sorgusu çalıştırılıyor
+	rows, errQuery := stmt.Query(searchText.Search, searchText.Search)
+	h.CheckErr(errQuery)
+
+	var posts m.Posts
+
+	for rows.Next() {
+		var post m.Post
+		var author m.Author
+		var user_id string
+		var post_id string
+		var comment_post_id string
+		var comments m.Comments
+
+		err = rows.Scan(&post.ID, &post.Title, &post.Body, &post.CreatedAt, &post.UpdatedAt, &user_id, &post.Likes, &author.ID, &author.UserName, &author.Email)
+
+		h.CheckErr(err)
+
+		post.Author = author
+
+		// Her gönderiye ait yorumları getirecek sorgu hazırlanıyor
+		stmt, err := mainDB.Prepare("SELECT * FROM comments AS c INNER JOIN ( SELECT id, username, email FROM users) u ON c.user_id = u.id WHERE c.post_id = ?")
+
+		var commentsRow *sql.Rows
+
+		// Her gönderiye ait yorumları getirecek sorgu çalıştırılıyor
+		commentsRow, err = stmt.Query(post.ID)
+
+		for commentsRow.Next() {
+			var comment m.Comment
+			var commentAuthor m.Author
+
+			err = commentsRow.Scan(&comment.ID, &comment.Comment, &post_id, &comment_post_id, &commentAuthor.ID, &commentAuthor.UserName, &commentAuthor.Email)
+
+			h.CheckErr(err)
+			comment.CommentAuthor = commentAuthor
+			comments = append(comments, comment)
+		}
+		post.Comments = comments
+		posts = append(posts, post)
+	}
+	json.NewEncoder(w).Encode(posts)
+}
+
 // Gönderi oluşturma
 func CreatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
@@ -300,22 +412,53 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 	// Yorum içeriği istek gövdesinden alınıyor
 	_ = json.NewDecoder(r.Body).Decode(&addComment)
 
-	// Veritabanına yorum ekleyecek sorgu hazırlanıyor
-	stmt, err := mainDB.Prepare("INSERT INTO comments( comment, post_id, user_id) VALUES(?, ?, ?)")
+	if addComment.Comment == "" {
+		json.NewEncoder(w).Encode(h.Error("Yorum boş bırakılamaz!"))
+	} else {
+		// Veritabanına yorum ekleyecek sorgu hazırlanıyor
+		stmt, err := mainDB.Prepare("INSERT INTO comments( comment, post_id, user_id) VALUES(?, ?, ?)")
+		h.CheckErr(err)
+
+		// Veritabanına yorum ekleyecek sorgu çalıştırılıyor
+		result, errExec := stmt.Exec(&addComment.Comment, &addComment.PostID, &addComment.UserID)
+		h.CheckErr(errExec)
+
+		rows, errRow := result.RowsAffected()
+		h.CheckErr(errRow)
+
+		// Hata kontrolü yapılıyor
+		if rows == 0 {
+			json.NewEncoder(w).Encode(h.Error("Bir terslik oldu!"))
+			return
+		} else {
+			json.NewEncoder(w).Encode("Yorum eklendi.")
+		}
+	}
+}
+
+// Kendi yorumunu silme
+func DeleteComment(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "aplication/json")
+
+	// Silinecek yorumun id' si istek parametresinden alınıyor
+	params := mux.Vars(r)
+
+	// Yorumu silecek sorgu hazırlanıyor
+	stmt, err := mainDB.Prepare("DELETE FROM comments WHERE id = ?")
 	h.CheckErr(err)
 
-	// Veritabanına yorum ekleyecek sorgu çalıştırılıyor
-	result, errExec := stmt.Exec(&addComment.Comment, &addComment.PostID, &addComment.UserID)
+	// Yorumu silecek sorgu çalıştırılıyor
+	result, errExec := stmt.Exec(params["id"])
 	h.CheckErr(errExec)
 
 	rows, errRow := result.RowsAffected()
 	h.CheckErr(errRow)
 
-	// Hata kontrolü yapılıyor
+	// GönderYorumuninin veritabanında olup olmadığı kontrol ediliyor
 	if rows == 0 {
-		json.NewEncoder(w).Encode(h.Error("Bir terslik oldu!"))
+		json.NewEncoder(w).Encode(h.Error("Yorum bulunamadı!"))
 		return
 	} else {
-		json.NewEncoder(w).Encode("Yorum eklendi.")
+		json.NewEncoder(w).Encode("Yorum silindi!")
 	}
 }

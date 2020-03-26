@@ -190,8 +190,24 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 				ss, _ := token.SignedString(mySigningKey)
 
+				// Login olacak kullanıcının bilgileri veritabanından alacak sorgu hazırlanıyor
+				stmt, err := mainDB.Prepare("SELECT id, username, email FROM users AS u WHERE u.username = ?")
+				h.CheckErr(err)
+
+				// Login olacak kullanıcının bilgileri veritabanından alacak sorgu çalıştırılıyor
+				rows, errQuery := stmt.Query(loginUser.UserName)
+				h.CheckErr(errQuery)
+
+				var user m.User
+
+				for rows.Next() {
+					err = rows.Scan(&user.ID, &user.UserName, &user.Email)
+					h.CheckErr(err)
+				}
+
 				var authUser m.AuthUser
 				authUser.IsLogin = true
+				authUser.User = user
 				authUser.Token = ss
 
 				json.NewEncoder(w).Encode(authUser)

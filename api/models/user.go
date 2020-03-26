@@ -32,5 +32,6 @@ type LoginUser struct {
 // Auth User Struct
 type AuthUser struct {
 	IsLogin bool   `json:"is_login"`
+	User    User   `json:"user"`
 	Token   string `json:"token"`
 }
