@@ -224,6 +224,39 @@
 	padding: 0;
 	height: 78vh;
 
+	.post_user_wrap {
+		color: #ffffff;
+		padding: 0;
+		margin: 0;
+
+		.post_username {
+			font-size: 0.9rem;
+			color: #829ab1;
+			position: relative;
+
+			&::after {
+				content: '/';
+				margin-left: 0.5rem;
+			}
+		}
+
+		.post_title {
+			font-size: 1rem;
+			transition: color 0.15s ease-out;
+
+			&:hover {
+				color: @primary-color;
+			}
+		}
+
+		.post_date {
+			color: #829ab1;
+			font-size: 0.8rem;
+			display: inline-block;
+			margin-left: 0.5rem;
+		}
+	}
+
 	.ant-list-item-content {
 		margin: 0;
 	}
@@ -251,7 +284,7 @@
 		border-bottom: 2px solid lighten(@body-background, 10%);
 		padding: 2rem;
 		cursor: pointer;
-		transition: background 0.2s ease-out;
+		transition: background 0.15s ease-out;
 
 		@media screen and (max-width: 576px) {
 			padding: 2rem 2rem 4rem 2rem;
@@ -286,6 +319,16 @@
 	position: relative;
 }
 
+.comment_added_avatar {
+	font-size: 1rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 32px;
+	height: 32px;
+	background-color: lighten(@body-background, 15%);
+}
+
 .post_actions {
 	width: 100%;
 	display: flex;
@@ -293,8 +336,34 @@
 	align-items: center;
 	margin-top: 1rem;
 	position: absolute;
-	top: -0.5rem;
 	right: 0;
+	z-index: 10;
+
+	.add_comment_wrap {
+		background-color: #fff;
+	}
+
+	.detail_action {
+		display: flex;
+		align-items: center;
+
+		.like_count {
+			color: #829ab1;
+			margin-right: 1rem;
+			margin-left: -0.3rem;
+		}
+	}
+
+	&--top {
+		top: -0.5rem;
+	}
+
+	&--bottom {
+		position: initial;
+		bottom: 0;
+		top: 0;
+		justify-content: flex-start;
+	}
 
 	@media screen and (max-width: 576px) {
 		top: initial;
@@ -313,7 +382,7 @@
 		width: 38px;
 		height: 38px;
 		border-radius: 50%;
-		transition: all 0.2s ease-out;
+		transition: all 0.15s ease-out;
 		margin: 0 0.5rem;
 		animation-duration: 0.3s;
 		animation-timing-function: ease-out;
@@ -348,9 +417,32 @@
 	}
 }
 
+.comment_length_home {
+	position: absolute;
+	left: 16px;
+	bottom: -1.2rem;
+	font-size: 0.7rem;
+	color: lighten(#f5f6fa, 10%);
+	opacity: 0.5;
+}
+
+.comment_length {
+	position: absolute;
+	left: 53px;
+	bottom: -0.5rem;
+	font-size: 0.7rem;
+	color: lighten(#f5f6fa, 10%);
+	opacity: 0.5;
+}
+
 // Most liked
 .most_liked_posts {
 	margin: 1.5rem 0;
+	width: 100%;
+	height: 427px;
+	overflow-y: scroll;
+	box-shadow: 0 0 1.2rem rgba(darken(@body-background, 10%), 0.2);
+	border-radius: 10px;
 
 	&_title {
 		margin: 0;
@@ -375,11 +467,27 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		transition: all 0.2s ease-out;
+		transition: all 0.15s ease-out;
 
 		&:hover {
 			background-color: rgba(#2ecc71, 0.2);
 			color: lighten(#2ecc71, 10%);
+		}
+	}
+
+	&_feedback_menu {
+		padding: 0 !important;
+		letter-spacing: 1px;
+
+		li:hover {
+			background-color: @primary-color;
+			color: #000;
+		}
+		li:nth-child(2):hover {
+			background-color: #f4d03f;
+		}
+		li:last-child:hover {
+			background-color: @error-color;
 		}
 	}
 
@@ -404,7 +512,7 @@
 		background-color: lighten(@body-background, 1%);
 		padding: 1rem 1.5rem;
 		cursor: pointer;
-		transition: background 0.2s ease-out;
+		transition: background 0.15s ease-out;
 		position: relative;
 
 		&:hover {
@@ -416,5 +524,157 @@
 			border-bottom-right-radius: 4px;
 			border-bottom-left-radius: 4px;
 		}
+	}
+}
+
+// Post Detail
+
+.post_detail {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+
+	&_header {
+		width: 100%;
+		display: flex;
+
+		.post_avatar {
+			width: 56px !important;
+			height: 56px !important;
+			font-size: 1.4rem;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: lighten(@body-background, 10%);
+			margin-right: 1rem;
+		}
+
+		.detail_username {
+			font-size: 0.9rem;
+			color: #829ab1;
+			position: relative;
+
+			&::after {
+				content: '/';
+				margin-left: 0.5rem;
+			}
+		}
+
+		.detail_date {
+			color: #829ab1;
+			font-size: 0.8rem;
+			display: inline-block;
+			margin-left: 0.5rem;
+		}
+
+		.post_title {
+			font-size: 1.4rem;
+		}
+	}
+
+	&_content {
+		position: relative;
+	}
+
+	&_comments {
+		height: 200px;
+		overflow-y: scroll;
+
+		.comment_author {
+			color: #829ab1;
+			font-size: 0.8rem;
+		}
+
+		.comment_avatar {
+			width: 36px !important;
+			height: 36px !important;
+			font-size: 1rem;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: lighten(@body-background, 10%);
+		}
+
+		.ant-list-split .ant-list-item,
+		.ant-list-split .ant-list-header {
+			border-bottom: 2px solid lighten(@body-background, 10%);
+
+			&:last-child {
+				border-bottom: none !important;
+			}
+		}
+	}
+}
+
+.ant-dropdown-content {
+	padding: 0.5rem 1rem;
+	background: lighten(@body-background, 10%);
+	border-radius: 4px;
+	box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.3);
+}
+
+.post_comment_title {
+	color: #829ab1;
+	margin: 2rem 0 0.5rem;
+}
+
+.share_pl_wrap {
+	width: 200px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-top: 0.4rem;
+	padding-bottom: 0.4rem;
+}
+
+.share_pl {
+	color: #ffffff;
+	font-size: 1.2rem;
+	transition: all 0.25s ease-out;
+	padding: 0.2rem;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	&:hover {
+		background-color: rgba(@primary-color, 0.3);
+	}
+}
+
+.comment_textarea {
+	background: lighten(@body-background, 10%);
+	color: #ffffff;
+	width: 350px;
+	padding: 0.6rem 1rem;
+	outline: none;
+	border: none;
+	margin: 0;
+	line-height: 1.3;
+
+	&::placeholder {
+		color: #829ab1;
+	}
+}
+
+.right_list_close {
+	position: absolute;
+	top: 50%;
+	right: -8px;
+	transform: translateY(-50%);
+	width: 32px;
+	height: 32px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: #ffffff;
+	border-radius: 50%;
+	transition: all 0.25s ease-out;
+
+	&:hover {
+		background: lighten(@body-background, 30%);
+		color: #ffffff;
 	}
 }

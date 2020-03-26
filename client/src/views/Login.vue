@@ -25,7 +25,7 @@
         class="custom_form"
         @submit="handleSubmit"
       >
-        <div class="form_header">
+        <div class="form_header animated fadeInDown">
           <img src="../assets/logo.svg" alt="" />
           <span>Paylaşıma katıl</span>
         </div>
@@ -90,7 +90,7 @@
         </div>
       </a-form>
       <div class="content_footer">
-        {{ `&copy; ${new Date().getFullYear()} POGO, Inc.`  }}
+        {{ `&copy; ${new Date().getFullYear()} POGO, Inc.` }}
       </div>
     </a-col>
   </a-row>
