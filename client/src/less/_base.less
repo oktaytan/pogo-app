@@ -54,8 +54,8 @@ body {
 
 .ant-layout {
 	background: @body-background;
-	border-left: 1px solid lighten(@body-background, 10%);
-	border-right: 1px solid lighten(@body-background, 10%);
+	border-left: 2px solid lighten(@body-background, 10%);
+	border-right: 2px solid lighten(@body-background, 10%);
 }
 
 .ant-layout-footer {
@@ -123,6 +123,23 @@ body {
 			}
 		}
 	}
+
+	.ant-modal-footer {
+		border-top: 2px solid lighten(@body-background, 10%);
+
+		.ant-btn {
+			border: none;
+		}
+
+		.ant-btn:first-child {
+			background-color: @body-background;
+			transition: background-color 0.25s ease-out;
+
+			&:hover {
+				background-color: darken(@body-background, 6%);
+			}
+		}
+	}
 }
 
 // Like Animation
@@ -132,11 +149,11 @@ body {
 		opacity: 1;
 	}
 	29% {
-		transform: translateY(30px);
+		transform: translateY(-30px);
 		opacity: 0;
 	}
 	30% {
-		transform: translateY(-20px);
+		transform: translateY(10px);
 		opacity: 0;
 	}
 	100% {
@@ -158,8 +175,16 @@ body {
 
 .ant-popover-placement-bottom > .ant-popover-content > .ant-popover-arrow,
 .ant-popover-placement-bottomLeft > .ant-popover-content > .ant-popover-arrow,
-.ant-popover-placement-bottomRight > .ant-popover-content > .ant-popover-arrow {
+.ant-popover-placement-bottomRight > .ant-popover-content > .ant-popover-arrow,
+.ant-popover-placement-topRight > .ant-popover-content > .ant-popover-arrow,
+.ant-popover-placement-topLeft > .ant-popover-content > .ant-popover-arrow,
+.ant-popover-placement-left > .ant-popover-content > .ant-popover-arrow,
+.ant-popover-placement-top > .ant-popover-content > .ant-popover-arrow {
 	border-color: lighten(@body-background, 5%);
+}
+
+.ant-popover-placement-topRight > .ant-popover-content > .ant-popover-arrow {
+	right: 12px;
 }
 
 .ant-popover-buttons {
@@ -168,10 +193,41 @@ body {
 	button:first-child {
 		background-color: transparent;
 		border: none;
-		color: lighten(@body-background, 45%);
+		color: lighten(@body-background, 35%);
 
 		&:hover {
 			color: #ffffff;
 		}
+	}
+}
+
+.ant-list-empty-text {
+	color: #829ab1;
+}
+
+.empty_wrap {
+	margin-top: 2rem !important;
+	.ant-empty-image {
+		height: 50px;
+	}
+
+	.empty_desc {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		margin-top: 1rem;
+		color: #829ab1;
+
+		a {
+			margin-top: 0.5rem;
+		}
+	}
+}
+
+.ant-modal-footer {
+	.ant-btn[disabled] {
+		background: darken(#829ab1, 10%);
+		color: #9cb6ce;
 	}
 }

@@ -1,90 +1,100 @@
-// import { ax } from '../../utils/settings';
+import { AXIOS } from '../../utils/settings';
+import {
+	FETCH_ALL_POSTS,
+	SET_ALL_POSTS,
+	GET_ALL_POSTS,
+	FETCH_POST_BY_ID,
+	SET_POST_BY_ID,
+	GET_POST_BY_ID,
+	POST_LIKE,
+	ADD_COMMENT,
+	DELETE_COMMENT
+} from '../keys';
 
-// const state = {
-// 	posts: [],
-// 	post: null
-// };
+const state = {
+	allPosts: [],
+	postById: null,
+	
+};
 
-// const getters = {
-// 	getPosts: (state) => state.posts,
-// 	getPost: (state) => state.post,
-// 	isPostLoading: (state) => state.loading
-// };
+const getters = {
+	GET_ALL_POSTS: (state) => state.posts,
+	GET_POST_BY_ID: (state) => state.postById
+};
 
-// const actions = {
-// 	fetchPosts: ({ commit }) => {
-// 		return new Promise((resolve, reject) => {
-// 			ax.get('/post/read.php')
-// 				.then((res) => {
-// 					commit('setPosts', res.data);
-// 					resolve(res.data);
-// 				})
-// 				.catch((err) => reject(err));
-// 		});
-// 	},
-// 	fetchSinglePost: ({ commit }, id) => {
-// 		return new Promise((resolve, reject) => {
-// 			ax.get(`/post/read_single.php?id=${id}`)
-// 				.then((res) => {
-// 					commit('setPost', res.data);
-// 					resolve(res.data);
-// 				})
-// 				.catch((err) => reject(err));
-// 		});
-// 	},
-// 	newPost: ({ commit }, post) => {
-// 		return new Promise((resolve, reject) => {
-// 			ax.get('/post/read.php')
-// 				.then((res) => {
-// 					let postIndex = res.data.findIndex((item) => item.id === post.id);
-// 					if (postIndex > -1) {
-// 						reject({ message: 'This post already exists.' });
-// 					} else {
-// 						ax.post('/post/create.php', JSON.stringify(post))
-// 							.then((res) => resolve(res))
-// 							.catch((err) => reject(err));
-// 					}
-// 				})
-// 				.catch((err) => reject(err));
-// 		});
-// 	},
-// 	updatePost: ({ commit }, post) => {
-// 		return new Promise((resolve, reject) => {
-// 			ax.get('/post/read.php')
-// 				.then((res) => {
-// 					let postIndex = res.data.findIndex((item) => item.id === post.id);
-// 					if (postIndex < 0) {
-// 						reject({ message: "This post doesn't exists." });
-// 					} else {
-// 						ax.put('/post/update.php', JSON.stringify(post))
-// 							.then((res) => resolve(res))
-// 							.catch((err) => reject(err));
-// 					}
-// 				})
-// 				.catch((err) => reject(err));
-// 		});
-// 	},
-// 	removePost: ({ commit }, id) => {
-// 		return new Promise((resolve, reject) => {
-// 			ax.post('/post/delete.php', JSON.stringify(id))
-// 				.then((res) => {
-// 					resolve(res);
-// 				})
-// 				.catch((err) => reject(err));
-// 		});
-// 	}
-// };
+const actions = {
+	FETCH_ALL_POSTS: ({ commit }) => {
+		return new Promise((resolve, reject) => {
+			AXIOS.get('/posts')
+				.then((res) => {
+					commit('SET_ALL_POSTS', res.data);
+					resolve(res.data);
+				})
+				.catch((err) => reject(err));
+		});
+	},
 
-// const mutations = {
-// 	setPosts: (state, data) => {
-// 		state.posts = data;
-// 	},
-// 	setPost: (state, post) => (state.post = post)
-// };
+	FETCH_POST_BY_ID: ({ commit }, id) => {
+		return new Promise((resolve, reject) => {
+			AXIOS.get(`/posts/${id}`)
+				.then((res) => {
+					commit('SET_POST_BY_ID', res.data);
+					resolve(res.data);
+				})
+				.catch((err) => reject(err));
+		});
+	},
 
-// export default {
-// 	state,
-// 	getters,
-// 	actions,
-// 	mutations
-// };
+	POST_LIKE: ({ commit }, payload) => {
+		let newLikes = {
+			likes: payload.likes
+		};
+		return new Promise((resolve, reject) => {
+			AXIOS.put(`/posts/${payload.id}`, JSON.stringify(newLikes))
+				.then((res) => {
+					resolve(res.data);
+				})
+				.catch((err) => reject(err));
+		});
+	},
+
+	ADD_COMMENT: ({ commit }, comment) => {
+		return new Promise((resolve, reject) => {
+			AXIOS.post('/comments', JSON.stringify(comment))
+				.then((res) => {
+					if (res.data.error) {
+						reject(res.data);
+					} else {
+						resolve(res.data);
+					}
+				})
+				.catch((err) => reject(err));
+		});
+	},
+
+	DELETE_COMMENT: ({ commit }, comment_id) => {
+		return new Promise((resolve, reject) => {
+			AXIOS.delete(`/comments/${comment_id}`)
+				.then((res) => {
+					if (res.data.error) {
+						reject(res.data);
+					} else {
+						resolve(res.data);
+					}
+				})
+				.catch((err) => reject(err));
+		});
+	}
+};
+
+const mutations = {
+	SET_ALL_POSTS: (state, posts) => (state.posts = posts),
+	SET_POST_BY_ID: (state, post) => (state.postById = post)
+};
+
+export default {
+	state,
+	getters,
+	actions,
+	mutations
+};

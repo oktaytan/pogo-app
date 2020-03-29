@@ -1,15 +1,13 @@
 import axios from 'axios';
 
-export const ax = axios.create({
-	baseURL: 'http://localhost:5000/api'
+export const AXIOS = axios.create({
+	baseURL: 'http://localhost:5000/api/'
 });
 
-if (localStorage.getItem('token') !== null) {
-	ax.defaults.headers.common['Authorization'] =
-		'Bearer ' + JSON.parse(localStorage.getItem('token'));
+if (localStorage.getItem('pogo_user') !== null) {
+	AXIOS.defaults.headers.common['Authorization'] =
+		'Bearer ' + JSON.parse(localStorage.getItem('pogo_user')).token;
 }
-
-window.ax = ax;
 
 export function capitalize(value) {
 	let newValue;

@@ -1,6 +1,6 @@
 <template>
   <a-layout-sider
-    class="home_layout_sidebar home_layout_sidebar--left"
+    class="home_layout_sidebar home_layout_sidebar--left animated fadeInRight"
     :style="{ minWidth: '450px', padding: '1rem 2rem' }"
   >
     <a-row>

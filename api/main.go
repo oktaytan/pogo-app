@@ -11,9 +11,9 @@ import (
 
 func main() {
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowedHeaders:   []string{"Authorization"},
-		AllowCredentials: true,
+		AllowedOrigins: []string{"*"},
+		AllowedHeaders: []string{"Authorization"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 	})
 
 	// Router initialize

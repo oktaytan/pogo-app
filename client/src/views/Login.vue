@@ -34,7 +34,7 @@
             <a-input
               size="large"
               v-decorator="[
-                'userName',
+                'username',
                 {
                   rules: [
                     {
@@ -103,18 +103,69 @@ export default {
   name: "Login",
   data: () => ({}),
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: "loginForm" });
-  },
-  mounted() {},
-  computed: {
-    ...mapGetters(["getColors"])
+    this.form = this.$form.createForm(this, {
+      name: "loginForm",
+      mapPropsToFields: () => {
+        return {
+          username: this.$form.createFormField({
+            value: localStorage.getItem("pogo_login")
+              ? JSON.parse(localStorage.getItem("pogo_login")).username
+              : ""
+          }),
+          remember: this.$form.createFormField({
+            value: localStorage.getItem("pogo_login")
+              ? JSON.parse(localStorage.getItem("pogo_login")).remember
+              : false
+          })
+        };
+      }
+    });
   },
   methods: {
+    ...mapActions(["USER_LOGIN"]),
+    // login submit
     handleSubmit(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
+        // Hata yoksa login isteği yapılıyor
         if (!err) {
-          console.log("Received values of form: ", values);
+          // Eğer beni hatırla işaretliyse
+          // localStorage' e kullanıcı adı kaydı yapılıyor
+          if (values.remember) {
+            localStorage.setItem(
+              "pogo_login",
+              JSON.stringify({
+                username: values.username,
+                remember: values.remember
+              })
+            );
+          } else {
+            // Eğer beni hatırla işaretli değilse
+            // localStorage' den kullanıcı adı kaydı siliniyor
+            localStorage.setItem(
+              "pogo_login",
+              JSON.stringify({
+                username: "",
+                remember: values.remember
+              })
+            );
+          }
+
+          const user = {
+            username: values.username,
+            password: values.password
+          };
+
+          // login isteği
+          this.USER_LOGIN(user)
+            .then(res => {
+              if (res.is_login) {
+                this.$router.push("/");
+              }
+            })
+            .catch(err => {
+              this.$message.error(err.message);
+            });
         }
       });
     }
@@ -122,4 +173,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+

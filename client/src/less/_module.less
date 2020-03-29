@@ -21,3 +21,143 @@
 		}
 	}
 }
+
+// Add post form
+.post_form {
+	width: 100%;
+	display: flex;
+	justify-content: flex-start;
+
+	&_items {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		flex: 1;
+
+		@media screen and (max-width: 576px) {
+			flex-direction: column;
+		}
+
+		&_data {
+			width: 100%;
+			flex: 2;
+			margin-right: 1rem;
+		}
+
+		.ant-row {
+			margin-bottom: 0;
+
+			textarea {
+				resize: none;
+				border: none;
+				width: 100%;
+				padding: 0 1.2rem;
+				line-height: 1.4;
+
+				&::placeholder {
+					opacity: 0.7;
+					color: #fff;
+				}
+			}
+		}
+		.new_post_submit_btn {
+			font-weight: 600;
+
+			&:disabled {
+				background-color: @primary-color;
+				border: none;
+				color: darken(@primary-color, 100%);
+				opacity: 0.3;
+			}
+		}
+	}
+	.new_post_input {
+		background-color: transparent;
+		font-size: 1.1rem;
+		margin-bottom: 0;
+
+		&:focus {
+			outline: none;
+			border: none;
+			box-shadow: none;
+		}
+	}
+
+	.header_avatar {
+		flex-shrink: 0;
+		background-color: lighten(@body-background, 10%);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 1.3rem;
+		width: 52px;
+		height: 52px;
+		margin-right: 1rem;
+	}
+}
+
+.disabled_btn:disabled {
+	background-color: darken(@body-background, 5%);
+	color: #617486;
+	transition: background-color 0.25s ease-out;
+
+	&:hover {
+		color: #617486;
+		background-color: darken(@body-background, 6%);
+	}
+}
+
+.click_area {
+	width: 80%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	z-index: 100;
+}
+
+.delete {
+	color: lighten(@body-background, 10%);
+	position: absolute;
+	top: 50%;
+	right: -1.5rem;
+	transform: translateY(-50%);
+	width: 32px;
+	height: 32px;
+	font-size: 1.1rem;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.25s ease-out;
+	cursor: pointer;
+
+	&:hover {
+		background-color: rgba(lighten(@error-color, 15%), 0.2);
+		color: darken(@error-color, 5%);
+	}
+}
+
+.delete_comment {
+	color: lighten(@body-background, 35%);
+	position: absolute;
+	top: 50%;
+	right: -1.5rem;
+	transform: translateY(-50%);
+	width: 32px;
+	height: 32px;
+	font-size: 1.3rem;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.25s ease-out;
+	cursor: pointer;
+
+	&:hover {
+		background-color: rgba(lighten(@primary-color, 15%), 0.2);
+		color: darken(@primary-color, 5%);
+	}
+}

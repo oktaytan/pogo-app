@@ -1,85 +1,72 @@
 <template>
   <div
     class="posts_container"
-    v-infinite-scroll="handleInfiniteOnLoad"
-    :infinite-scroll-disabled="busy"
-    :infinite-scroll-distance="10"
+    :style="{ height: GET_TOP_BAR_SHOW ? '78vh' : '100vh' }"
   >
     <Loader v-if="loading" />
-    <a-list v-else itemLayout="vertical" size="large" :dataSource="listData">
+    <a-list v-else itemLayout="vertical" size="large" :dataSource="posts">
       <a-list-item
         slot="renderItem"
-        slot-scope="item"
+        slot-scope="post"
         ref="postItem"
-        key="item.title"
+        key="post.id"
         class="post_item"
-        @click="detailShow"
+        @click="() => detailShow(post.id, post.comments)"
       >
         <a-list-item-meta>
           <div class="post_user_wrap" slot="title">
             <div>
-              <span class="post_username">cawis</span>
-              <span class="post_date">34 dk önce</span>
+              <span class="post_username">{{ post.author.username }}</span>
+              <span class="post_date">{{
+                $moment(post.created_at).fromNow()
+              }}</span>
             </div>
-            <span class="post_title">{{ item.title }}</span>
+            <span class="post_title">{{ post.title }}</span>
           </div>
-          <a-avatar slot="avatar" class="post_avatar">CW</a-avatar>
+          <a-avatar slot="avatar" class="post_avatar">{{
+            post.author.username | userAvatar
+          }}</a-avatar>
         </a-list-item-meta>
-        {{ item.content }}
-        <post-actions position="top" />
-        <!-- Gönderi detayları -->
-        <post-detail ref="postDetail" :postId="item.id" />
+        {{ post.body.slice(0, 200) }}...
+        <a-checkable-tag>devamı</a-checkable-tag>
+        <post-actions position="top" :post="post" />
       </a-list-item>
-      <div v-if="loading && !busy" class="posts_loading">
-        <a-spin />
-      </div>
     </a-list>
   </div>
 </template>
 
 <script>
 import Loader from "./Loader.vue";
-import PostDetail from "./PostDetail";
 import PostActions from "./PostActions";
 
-const listData = [];
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    id: i,
-    to: "/posts/",
-    title: `Post Title ${i}`,
-    avatar: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-    description:
-      "Ant Design, a design language for background applications, is refined by Ant UED Team.",
-    content:
-      "We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently."
-  });
-}
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Posts",
   components: {
     Loader,
-    "post-detail": PostDetail,
     "post-actions": PostActions
   },
   data() {
     return {
-      loading: true,
-      listData,
-      busy: false,
+      posts: [],
       loading: true
     };
   },
   mounted() {
-    setTimeout(() => (this.loading = false), 300);
+    this.loading = true;
+    this.FETCH_ALL_POSTS().then(data => {
+      this.posts = data;
+      this.loading = this.posts && false;
+    });
+  },
+  computed: {
+    ...mapGetters(["GET_TOP_BAR_SHOW", "GET_ALL_POSTS", "GET_USER"])
   },
   methods: {
-    handleInfiniteOnLoad() {
-      // console.log("test");
-    },
-    detailShow(e) {
-      this.$refs.postDetail.showModal = true;
+    ...mapActions(["FETCH_ALL_POSTS"]),
+    detailShow(id, comments) {
+      this.$router.push({ name: "Detaylar", params: { id } });
     }
   }
 };

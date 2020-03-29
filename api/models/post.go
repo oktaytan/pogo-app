@@ -47,10 +47,16 @@ type UpdatedPost struct {
 
 // Send Post Struct
 type SendPost struct {
-	ID     string `json:"id"`
-	Title  string `json:"title"`
-	Body   string `json:"body"`
-	UserID string `json:"user_id"`
+	Result Success `json:"result"`
+	Title  string  `json:"title"`
+	Body   string  `json:"body"`
+	UserID string  `json:"user_id"`
+}
+
+// Error Struct
+type Success struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
 }
 
 // Error Struct
@@ -85,3 +91,23 @@ type GetComment struct {
 }
 
 type GetComments []GetComment
+
+// Likes struct
+type Likes struct {
+	LikeCount int `json:"likes"`
+}
+
+// Like result struct
+type LikesResult struct {
+	Result Success `json:"result"`
+	PostID string  `json:"post_id"`
+	Likes  int     `json:"likes"`
+}
+
+// LikedUser result struct
+type LikedUser struct {
+	ID     int    `json:"id"`
+	PostID string `json:"post_id"`
+	UserID string `json:"user_id"`
+	Liked  int    `json:"liked"`
+}

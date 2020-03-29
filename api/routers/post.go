@@ -22,15 +22,17 @@ func SetPostRoutes(router *mux.Router) *mux.Router {
 	router.Handle("/api/posts", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.CreatePost))).Methods("POST")
 	// Search Post
 	router.Handle("/api/posts/search", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.SearchPosts))).Methods("POST")
-	// Update Post
+	// Like Post
 	router.Handle("/api/posts/{id}", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.UpdatePost))).Methods("PUT")
+	// User Like
+	router.Handle("/api/likes", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.LikedByUser))).Methods("POST")
 	// Delete Post
 	router.Handle("/api/posts/{id}", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.DeletePost))).Methods("DELETE")
 	// Get All Comments
 	router.Handle("/api/comments", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.GetAllComments))).Methods("GET")
 	// Add Comment
 	router.Handle("/api/comments", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.AddComment))).Methods("POST")
-	// Add Comment
+	// Delete Comment
 	router.Handle("/api/comments/{id}", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.DeleteComment))).Methods("DELETE")
 
 	return router

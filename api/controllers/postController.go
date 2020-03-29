@@ -3,7 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
-	"math/rand"
 	"net/http"
 	"pogo/api/db"
 	h "pogo/api/helpers"
@@ -178,6 +177,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 	isID, _ := strconv.ParseInt(post.ID, 10, 0)
 
 	if isID == 0 {
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(h.Error("Gönderi bulunamadı!"))
 		return
 	} else {
@@ -302,53 +302,139 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
 	var post m.SendPost
+	var result m.Success
 
 	// Gönderini içeriği istek gövdesinden alınıyor
 	_ = json.NewDecoder(r.Body).Decode(&post)
 
-	// Yeni gönderi için id oluşturuluyor
-	post.ID = strconv.Itoa(rand.Intn(100000000000))
-
 	// Yeni gönderiyi veritabanına ekleyecek sorgu hazırlanıyor
-	stmt, err := mainDB.Prepare("INSERT INTO posts(id, title, body, user_id) VALUES (?, ?, ?, ?)")
+	stmt, err := mainDB.Prepare("INSERT INTO posts(title, body, user_id) VALUES (?, ?, ?)")
 	h.CheckErr(err)
 
 	// Yeni gönderiyi veritabanına ekleyecek sorgu çalıştırılıyor
-	_, errExec := stmt.Exec(post.ID, post.Title, post.Body, post.UserID)
+	_, errExec := stmt.Exec(post.Title, post.Body, post.UserID)
 	h.CheckErr(errExec)
+
+	result.Success = true
+	result.Message = "Gönderi paylaşıldı."
+
+	post.Result = result
 
 	json.NewEncoder(w).Encode(post)
 }
 
-// Gönderi güncelleme
+// Gönderi beğenme
 func UpdatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
 	// Güncellenecek gönderinin id' si istek parametresinden alınıyor
 	params := mux.Vars(r)
 
-	var updatedPost m.UpdatedPost
+	var likes m.Likes
 
 	// Güncellenecek gönderinin yeni içeriği istek gövdesinden alınıyor
-	_ = json.NewDecoder(r.Body).Decode(&updatedPost)
+	_ = json.NewDecoder(r.Body).Decode(&likes)
 
 	// Gönderiyi güncelleyecek sorgu hazırlanıyor
-	stmt, err := mainDB.Prepare("UPDATE posts SET id = ?, title = ?, body = ?, created_at = ?, updated_at = ?, user_id = ?, likes = ? WHERE id = ?")
+	stmt, err := mainDB.Prepare("UPDATE posts SET likes = ? WHERE id = ?")
 	h.CheckErr(err)
 
 	// Gönderiyi güncelleyecek sorgu çalıştırılıyor
-	result, errExec := stmt.Exec(updatedPost.ID, updatedPost.Title, updatedPost.Body, updatedPost.CreatedAt, updatedPost.UpdatedAt, updatedPost.UserID, updatedPost.Likes, params["id"])
+	result, errExec := stmt.Exec(likes.LikeCount, params["id"])
 	h.CheckErr(errExec)
 
 	rowAffected, errLast := result.RowsAffected()
 	h.CheckErr(errLast)
 
+	var likeResult m.LikesResult
+	var resultLike m.Success
+
+	resultLike.Success = true
+	resultLike.Message = "Gönderi Beğenildi"
+
+	likeResult.Result = resultLike
+	likeResult.PostID = params["id"]
+	likeResult.Likes = likes.LikeCount
+
 	// Gönderinin veritabanında olup olmadığı kontrol ediliyor
 	if rowAffected == 0 {
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(h.Error("Gönderi bulunamadı!"))
 		return
 	} else {
-		json.NewEncoder(w).Encode(updatedPost)
+		json.NewEncoder(w).Encode(likeResult)
+	}
+}
+
+// Kullanıcı beğenileri ayarlama
+func LikedByUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "aplication/json")
+
+	var likedUser m.LikedUser
+
+	// Güncellenecek beğeni durumunun yeni içeriği istek gövdesinden alınıyor
+	_ = json.NewDecoder(r.Body).Decode(&likedUser)
+
+	// Mevcut beğeni var mı diye bakılıyor
+	stmtHas, errHas := mainDB.Prepare("SELECT * FROM user_likes WHERE post_id = ? AND user_id = ?")
+	h.CheckErr(errHas)
+
+	rowsHas, errHasExec := stmtHas.Query(&likedUser.PostID, &likedUser.UserID)
+	h.CheckErr(errHasExec)
+
+	for rowsHas.Next() {
+		err := rowsHas.Scan(&likedUser.ID, &likedUser.PostID, &likedUser.UserID, &likedUser.Liked)
+		h.CheckErr(err)
+	}
+
+	if likedUser.ID == 0 {
+		likedUser.Liked = 1
+
+		// Yeni gönderiyi veritabanına ekleyecek sorgu hazırlanıyor
+		stmtInsert, errInsert := mainDB.Prepare("INSERT INTO user_likes(post_id, user_id, liked) VALUES (?, ?, ?)")
+		h.CheckErr(errInsert)
+
+		// Yeni gönderiyi veritabanına ekleyecek sorgu çalıştırılıyor
+		resultInsert, errExecInsert := stmtInsert.Exec(likedUser.PostID, likedUser.UserID, likedUser.Liked)
+		h.CheckErr(errExecInsert)
+
+		rowsInsert, errRowInsert := resultInsert.RowsAffected()
+		h.CheckErr(errRowInsert)
+
+		// Gönderinin veritabanında olup olmadığı kontrol ediliyor
+		if rowsInsert == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(h.Error("Gönderi bulunamadı!"))
+			return
+		} else {
+			json.NewEncoder(w).Encode(likedUser)
+		}
+	} else {
+		if likedUser.Liked == 0 {
+			likedUser.Liked = 1
+		} else {
+			likedUser.Liked = 0
+		}
+
+		// Yeni gönderiyi veritabanına ekleyecek sorgu hazırlanıyor
+		stmt, err := mainDB.Prepare("UPDATE user_likes SET liked = ? WHERE post_id = ? AND user_id = ?")
+		h.CheckErr(err)
+
+		// Yeni gönderiyi veritabanına ekleyecek sorgu çalıştırılıyor
+		result, errExec := stmt.Exec(likedUser.Liked, likedUser.PostID, likedUser.UserID)
+		h.CheckErr(errExec)
+
+		rows, errRow := result.RowsAffected()
+		h.CheckErr(errRow)
+
+		// Gönderinin veritabanında olup olmadığı kontrol ediliyor
+		if rows == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(h.Error("Hata!"))
+			return
+		} else {
+			json.NewEncoder(w).Encode(likedUser)
+		}
 	}
 }
 
@@ -372,6 +458,7 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 
 	// Gönderinin veritabanında olup olmadığı kontrol ediliyor
 	if rows == 0 {
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(h.Error("Gönderi bulunamadı!"))
 		return
 	} else {
@@ -428,6 +515,7 @@ func AddComment(w http.ResponseWriter, r *http.Request) {
 
 		// Hata kontrolü yapılıyor
 		if rows == 0 {
+			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(h.Error("Bir terslik oldu!"))
 			return
 		} else {
@@ -456,6 +544,7 @@ func DeleteComment(w http.ResponseWriter, r *http.Request) {
 
 	// GönderYorumuninin veritabanında olup olmadığı kontrol ediliyor
 	if rows == 0 {
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(h.Error("Yorum bulunamadı!"))
 		return
 	} else {

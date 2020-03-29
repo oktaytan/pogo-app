@@ -1,96 +1,199 @@
 <template>
-  <a-modal
-    title=""
-    centered
-    v-model="showModal"
-    closable
-    :footer="null"
-    :bodyStyle="{
-      minHeight: '400px',
-      borderRadius: '10px',
-      border: '1px solid #486581'
-    }"
-    class="post_detail_wrap"
-  >
-    <div class="post_detail">
-      <div class="post_detail_header">
-        <a-avatar class="post_avatar">CW</a-avatar>
-        <div>
-          <div class="">
-            <span class="detail_username">cawis {{ postId }}</span>
-            <span class="detail_date">34 dk önce</span>
+  <div style="postion: relative">
+    <page-header title="Paylaşım detayları" v-if="!GET_TOP_BAR_SHOW" />
+
+    <Loader v-if="loading" />
+    <a-card
+      v-else
+      class="post_detail_wrap"
+      :style="{ height: GET_TOP_BAR_SHOW ? '73vh' : '80vh' }"
+    >
+      <div class="post_detail">
+        <div class="post_detail_header">
+          <a-avatar class="post_avatar">{{
+            GET_POST_BY_ID.author.username | userAvatar
+          }}</a-avatar>
+          <div>
+            <div>
+              <span class="detail_username">{{
+                GET_POST_BY_ID.author.username
+              }}</span>
+              <span class="detail_date">{{
+                $moment(GET_POST_BY_ID.created_at).fromNow()
+              }}</span>
+            </div>
+            <p class="post_title">{{ GET_POST_BY_ID.title }}</p>
           </div>
-          <p class="post_title">Post Title</p>
+        </div>
+
+        <div class="post_detail_content">
+          <p>
+            {{ GET_POST_BY_ID.body }}
+          </p>
+
+          <post-actions
+            ref="postActions"
+            :myPost="
+              GET_POST_BY_ID.author.username === GET_USER.username
+                ? true
+                : false
+            "
+            position="bottom"
+            class="mobile_post_actions"
+            :details="true"
+            :post="GET_POST_BY_ID"
+            @addedComment="fetchPost"
+            @likedPost="fetchPost"
+          />
+        </div>
+
+        <post-actions
+          ref="postActions"
+          :myPost="
+            GET_POST_BY_ID.author.username === GET_USER.username ? true : false
+          "
+          position="top"
+          class="desktop_post_actions"
+          :details="true"
+          :post="GET_POST_BY_ID"
+          @addedComment="fetchPost"
+          @likedPost="fetchPost"
+        />
+
+        <p class="post_comment_title">{{ commentCount }}</p>
+        <div class="post_detail_comments">
+          <a-list
+            class="comment-list"
+            itemLayout="horizontal"
+            :dataSource="comments"
+          >
+            <a-empty
+              v-if="comments.length == 0"
+              :image="noCommentImg"
+              :style="{
+                height: '100%',
+                marginTop: '1rem'
+              }"
+              class="empty_wrap"
+            >
+              <span slot="description" class="empty_desc">
+                <span>Henüz yorum yapılmamış</span>
+                <a @click="openCommentModal">İlk sen yap!</a>
+              </span>
+            </a-empty>
+            <a-list-item
+              slot="renderItem"
+              slot-scope="item"
+              :style="{ position: 'relative' }"
+            >
+              <a-comment>
+                <span class="comment_author" slot="author">{{
+                  item.author.username
+                }}</span>
+                <a-avatar class="comment_avatar" slot="avatar">{{
+                  item.author.username | userAvatar
+                }}</a-avatar>
+                <p slot="content" class="comment_detail">
+                  {{ item.comment }}
+                </p>
+              </a-comment>
+
+              <a-dropdown
+                v-if="item.author.id == GET_USER.id"
+                :trigger="['click']"
+                placement="bottomRight"
+                :style="{
+                  float: 'right',
+                  position: 'absolute',
+                  top: '30%',
+                  right: '0.5rem',
+                  transfrom: 'translateY(-50%)'
+                }"
+              >
+                <a-icon type="more" class="delete_comment" />
+                <a-menu slot="overlay">
+                  <a-menu-item
+                    key="0"
+                    @click="() => deleteComment(item.author.id, item.id)"
+                  >
+                    <a-icon type="delete" theme="filled" />
+                    <span>Kaldır</span>
+                  </a-menu-item>
+                </a-menu>
+              </a-dropdown>
+            </a-list-item>
+          </a-list>
         </div>
       </div>
-
-      <div class="post_detail_content">
-        <p>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sunt labore
-          dolore rerum tempore perferendis tempora illum quibusdam nisi,
-          reprehenderit deserunt, repudiandae nostrum provident adipisci quidem
-          debitis vero, vel neque sint. Lorem ipsum dolor sit amet consectetur,
-          adipisicing elit. Sunt labore dolore rerum tempore perferendis tempora
-          illum quibusdam nisi, reprehenderit deserunt, repudiandae nostrum
-          provident adipisci quidem debitis vero, vel neque sint.
-        </p>
-        <post-actions position="bottom" :details="true" />
-      </div>
-
-      <p class="post_comment_title">{{ `${comments.length} yorum` }}</p>
-      <div class="post_detail_comments">
-        <a-list
-          class="comment-list"
-          itemLayout="horizontal"
-          :dataSource="comments"
-        >
-          <a-list-item slot="renderItem" slot-scope="item, index">
-            <a-comment>
-              <span class="comment_author" slot="author">{{
-                item.author
-              }}</span>
-              <a-avatar class="comment_avatar" slot="avatar">FG</a-avatar>
-              <p slot="content">{{ item.content }}</p>
-            </a-comment>
-          </a-list-item>
-        </a-list>
-      </div>
-    </div>
-  </a-modal>
+    </a-card>
+  </div>
 </template>
 
 <script>
-import PostAcitons from "./PostActions";
+import { mapGetters, mapActions } from "vuex";
+
+import PostActions from "./PostActions";
+import Loader from "./Loader.vue";
+import PageHeader from "./PageHeader";
+import noCommentImg from "../assets/no-comments.png";
 
 export default {
   name: "PostDetail",
   props: {
-    postId: {
-      type: Number,
-      required: true
+    myPost: {
+      type: Boolean
     }
   },
   components: {
-    "post-actions": PostAcitons
+    Loader,
+    "post-actions": PostActions,
+    "page-header": PageHeader
   },
   data() {
     return {
-      showModal: false,
-      comments: [
-        {
-          author: "Han Solo",
-          content:
-            "We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently."
-        },
-        {
-          author: "Han Solo",
-          content:
-            "We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently."
-        }
-      ]
+      loading: true,
+      comments: [],
+      commentCount: "",
+      noCommentImg
     };
   },
-  created() {},
-  methods: {}
+  mounted() {
+    this.fetchPost();
+  },
+  computed: {
+    ...mapGetters(["GET_TOP_BAR_SHOW", "GET_POST_BY_ID", "GET_USER"])
+  },
+  methods: {
+    ...mapActions(["FETCH_POST_BY_ID", "DELETE_COMMENT"]),
+    openCommentModal() {
+      this.$refs.postActions.openCommentModal();
+    },
+    fetchPost() {
+      this.FETCH_POST_BY_ID(this.$route.params.id)
+        .then(data => {
+          this.loading = false;
+          this.comments =
+            this.GET_POST_BY_ID.comments != null
+              ? this.GET_POST_BY_ID.comments
+              : [];
+
+          this.commentCount =
+            this.comments.length > 0 ? `${this.comments.length} yorum` : "";
+        })
+        .catch(err => this.$message.error(err.message));
+    },
+    deleteComment(author_id, comment_id) {
+      if (author_id === this.GET_USER.id) {
+        this.DELETE_COMMENT(comment_id)
+          .then(res => {
+            this.$message.success("Paylaşım kaldırıldı!");
+            this.fetchPost();
+          })
+          .catch(err => this.$message.error(err.message));
+      } else {
+        return false;
+      }
+    }
+  }
 };
 </script>
