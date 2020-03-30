@@ -1,5 +1,6 @@
 <template>
   <a-list>
+    <!-- Arama yapıldıysa sağ bar başlığı değiştiriliyor -->
     <div v-if="search" slot="header" :style="{ position: 'relative' }">
       Arama Sonuçları
       <a-icon
@@ -8,17 +9,21 @@
         @click="$emit('backLiked')"
       />
     </div>
+    <!-- Arama yapılmadıysa sağ bar başlığı değiştiriliyor -->
     <div v-else slot="header" :style="{ position: 'relative' }">
       En Çok Beğenilenler
     </div>
-
+    <!-- Sağ panelde listelenecek gönderi özetleri -->
     <a-list-item
       v-for="post in posts"
       :key="post.id"
       class="most_liked_posts_item animated fadeIn"
     >
+      <!-- Her özete tıkandığında o gönderiye ait detay sayfasına gidilyor -->
       <div class="click_area" @click="() => detailShow(post.id)"></div>
+      <!-- Gönderi başlığı -->
       <p class="most_liked_posts_title">{{ post.title }}</p>
+      <!-- Gönderi beğeni sayısı -->
       <p class="most_liked_posts_like">{{ post.likes }} beğeni</p>
       <a-dropdown :trigger="['hover']">
         <a-icon class="most_liked_posts_action" type="more" />
@@ -56,6 +61,7 @@ export default {
     return {};
   },
   methods: {
+    // Gönderiye tıklandığında ona ait detay sayfasına gidiliyor
     detailShow(id) {
       this.$router.push("/");
       setTimeout(() => {

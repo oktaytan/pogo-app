@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+
 import auth from './modules/auth';
 import posts from './modules/posts';
 import ui from './modules/ui';

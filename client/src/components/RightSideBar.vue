@@ -4,6 +4,7 @@
     :style="{ minWidth: '450px', padding: '1rem 2rem' }"
   >
     <a-row>
+      <!-- Gönderi arama alanı -->
       <a-input-search
         placeholder="Pogo' da ara..."
         @search="onSearch"
@@ -14,12 +15,14 @@
       />
       <div class="most_liked_posts">
         <Loader v-if="loading" />
+        <!-- Arama sonuçlarının listesi -->
         <right-list
           v-else-if="!loading && searching"
           :posts="postsSearch"
           :search="true"
           @backLiked="cancelSearch"
         />
+        <!-- En çok beğeni alan gönderiler listesi -->
         <right-list v-else :posts="posts" :search="false" />
       </div>
       <a-layout-footer :style="{ textAlign: 'center' }">
@@ -53,6 +56,7 @@ export default {
     ...mapGetters(["GET_POST_BY_LIKES", "GET_SEARCH_POSTS"])
   },
   mounted() {
+    // Beğeni sayısına göre sıralanmış gönderiler alınıyor
     this.FETCH_POST_BY_LIKES().then(res => {
       this.posts = this.GET_POST_BY_LIKES;
       this.loading = false;
@@ -60,9 +64,11 @@ export default {
   },
   methods: {
     ...mapActions(["FETCH_POST_BY_LIKES", "FETCH_SEARCH_POSTS"]),
+    // Arama yapılıyor
     onSearch() {
       if (this.searchText != "") {
         this.searching = true;
+        // Arama sonuçalrının getirecek action tetikleniyor
         this.FETCH_SEARCH_POSTS({ search: this.searchText }).then(res => {
           this.postsSearch = this.GET_SEARCH_POSTS;
         });
@@ -70,6 +76,7 @@ export default {
         this.searching = false;
       }
     },
+    // Arama sonuçları iptal edilip bir önceki liste getiriliyor
     cancelSearch() {
       this.searching = false;
       this.searchText = "";

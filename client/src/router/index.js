@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+
 import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Logout from '../views/Logout.vue';
@@ -56,7 +57,6 @@ const routes = [
 		component: Register,
 		meta: { noLogin: true }
 	},
-	// 404 NotFound
 	{
 		path: '*',
 		name: 'notFound',
@@ -71,6 +71,7 @@ const router = new VueRouter({
 	routes
 });
 
+// Route' lar için gerekli authentication kontrolleri yapılıyor
 router.beforeEach((to, from, next) => {
 	const token = localStorage.getItem('pogo_user')
 		? JSON.parse(localStorage.getItem('pogo_user')).token

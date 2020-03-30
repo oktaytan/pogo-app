@@ -23,6 +23,7 @@ export default {
   name: "Logout",
   methods: {
     ...mapActions(["USER_LOGOUT"]),
+    // Kullanıcıyı logout yapacak action tetikleniyor
     logout() {
       this.USER_LOGOUT()
         .then(res => {

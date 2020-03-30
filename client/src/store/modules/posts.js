@@ -1,34 +1,5 @@
 import { AXIOS } from '../../utils/settings';
-import {
-	FETCH_ALL_POSTS,
-	SET_ALL_POSTS,
-	GET_ALL_POSTS,
-	FETCH_USERS_POSTS,
-	SET_USERS_POSTS,
-	GET_USERS_POSTS,
-	FETCH_POST_BY_ID,
-	SET_POST_BY_ID,
-	GET_POST_BY_ID,
-	FETCH_POST_BY_LIKES,
-	SET_POST_BY_LIKES,
-	GET_POST_BY_LIKES,
-	POST_LIKE,
-	ADD_NEW_POST,
-	GET_NEW_POST_LOADING,
-	DELETE_POST,
-	FETCH_USER_LIKES,
-	SET_USER_LIKES,
-	GET_USER_LIKES,
-	USER_LIKED,
-	ADD_COMMENT,
-	DELETE_COMMENT,
-	FETCH_SEARCH_POSTS,
-	SET_SEARCH_POSTS,
-	GET_SEARCH_POSTS,
-	FETCH_ALL_COMMENTS,
-	SET_ALL_COMMENTS,
-	GET_ALL_COMMENTS
-} from '../keys';
+import * as _ from '../keys';
 
 const state = {
 	allPosts: [],
@@ -42,18 +13,19 @@ const state = {
 };
 
 const getters = {
-	[GET_ALL_POSTS]: (state) => state.allPosts,
-	[GET_USERS_POSTS]: (state) => state.usersPosts,
-	[GET_POST_BY_ID]: (state) => state.postById,
-	[GET_USER_LIKES]: (state) => state.userLikes,
-	[GET_POST_BY_LIKES]: (state) => state.mostLikedPosts,
-	[GET_SEARCH_POSTS]: (state) => state.searchedPosts,
-	[GET_ALL_COMMENTS]: (state) => state.allComments,
-	[GET_NEW_POST_LOADING]: (state) => state.newPostLoading
+	[_.GET_ALL_POSTS]: (state) => state.allPosts,
+	[_.GET_USERS_POSTS]: (state) => state.usersPosts,
+	[_.GET_POST_BY_ID]: (state) => state.postById,
+	[_.GET_USER_LIKES]: (state) => state.userLikes,
+	[_.GET_POST_BY_LIKES]: (state) => state.mostLikedPosts,
+	[_.GET_SEARCH_POSTS]: (state) => state.searchedPosts,
+	[_.GET_ALL_COMMENTS]: (state) => state.allComments,
+	[_.GET_NEW_POST_LOADING]: (state) => state.newPostLoading
 };
 
 const actions = {
-	[FETCH_ALL_POSTS]: ({ commit }) => {
+	// Tüm gönderileri getirme
+	[_.FETCH_ALL_POSTS]: ({ commit }) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.get('/posts')
 				.then((res) => {
@@ -64,7 +36,8 @@ const actions = {
 		});
 	},
 
-	[FETCH_USERS_POSTS]: ({ commit }, username) => {
+	// Kullanıcının kendi gönderilerini getirme
+	[_.FETCH_USERS_POSTS]: ({ commit }, username) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.get(`/${username}/posts`)
 				.then((res) => {
@@ -75,7 +48,8 @@ const actions = {
 		});
 	},
 
-	[FETCH_ALL_COMMENTS]: ({ commit }, username) => {
+	// Tüm yorumları getirme
+	[_.FETCH_ALL_COMMENTS]: ({ commit }) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.get('/comments')
 				.then((res) => {
@@ -86,7 +60,8 @@ const actions = {
 		});
 	},
 
-	[FETCH_POST_BY_ID]: ({ commit }, id) => {
+	// Seçili gönderiyi getirme
+	[_.FETCH_POST_BY_ID]: ({ commit }, id) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.get(`/posts/${id}`)
 				.then((res) => {
@@ -97,7 +72,8 @@ const actions = {
 		});
 	},
 
-	[FETCH_POST_BY_LIKES]: ({ commit }) => {
+	// Beğeni sayısı sıralamasına göre gönerileri getirme
+	[_.FETCH_POST_BY_LIKES]: ({ commit }) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.get('/posts/liked')
 				.then((res) => {
@@ -108,7 +84,8 @@ const actions = {
 		});
 	},
 
-	[FETCH_SEARCH_POSTS]: ({ commit }, search) => {
+	// Arama sonucuna göre gönderileri getirme
+	[_.FETCH_SEARCH_POSTS]: ({ commit }, search) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.post('/posts/search', JSON.stringify(search))
 				.then((res) => {
@@ -119,7 +96,8 @@ const actions = {
 		});
 	},
 
-	[ADD_NEW_POST]: ({ commit }, post) => {
+	// Yeni gönderi ekleme
+	[_.ADD_NEW_POST]: ({ commit }, post) => {
 		state.newPostLoading = true;
 		return new Promise((resolve, reject) => {
 			AXIOS.post('/posts', JSON.stringify(post))
@@ -137,7 +115,8 @@ const actions = {
 		});
 	},
 
-	[DELETE_POST]: ({ commit }, id) => {
+	// Gönderi silme
+	[_.DELETE_POST]: ({ commit }, id) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.delete(`/posts/${id}`)
 				.then((resData) => {
@@ -153,7 +132,8 @@ const actions = {
 		});
 	},
 
-	[POST_LIKE]: ({ commit }, payload) => {
+	// Gönderi beğenme
+	[_.POST_LIKE]: ({ commit }, payload) => {
 		let newLikes = {
 			likes: payload.likes
 		};
@@ -166,7 +146,8 @@ const actions = {
 		});
 	},
 
-	[FETCH_USER_LIKES]: ({ commit }, id) => {
+	// Kullanıcının yaptığı beğenileri getirme
+	[_.FETCH_USER_LIKES]: ({ commit }, id) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.get(`/likes/${id}`)
 				.then((res) => {
@@ -177,7 +158,8 @@ const actions = {
 		});
 	},
 
-	[USER_LIKED]: ({ commit }, payload) => {
+	// Kullanıcı gönderiyi beğendi ve ya beğeniyi geri aldı durumu
+	[_.USER_LIKED]: ({ commit }, payload) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.post('/likes', JSON.stringify(payload))
 				.then((res) => {
@@ -187,7 +169,8 @@ const actions = {
 		});
 	},
 
-	[ADD_COMMENT]: ({ commit }, comment) => {
+	// Yorum ekleme
+	[_.ADD_COMMENT]: ({ commit }, comment) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.post('/comments', JSON.stringify(comment))
 				.then((res) => {
@@ -201,7 +184,8 @@ const actions = {
 		});
 	},
 
-	[DELETE_COMMENT]: ({ commit }, comment_id) => {
+	// Yorum silme
+	[_.DELETE_COMMENT]: ({ commit }, comment_id) => {
 		return new Promise((resolve, reject) => {
 			AXIOS.delete(`/comments/${comment_id}`)
 				.then((res) => {
@@ -217,13 +201,13 @@ const actions = {
 };
 
 const mutations = {
-	[SET_ALL_POSTS]: (state, posts) => (state.allPosts = posts),
-	[SET_USERS_POSTS]: (state, posts) => (state.usersPosts = posts),
-	[SET_POST_BY_ID]: (state, post) => (state.postById = post),
-	[SET_USER_LIKES]: (state, likes) => (state.userLikes = likes),
-	[SET_POST_BY_LIKES]: (state, posts) => (state.mostLikedPosts = posts),
-	[SET_SEARCH_POSTS]: (state, posts) => (state.searchedPosts = posts),
-	[SET_ALL_COMMENTS]: (state, comments) => (state.allComments = comments)
+	[_.SET_ALL_POSTS]: (state, posts) => (state.allPosts = posts),
+	[_.SET_USERS_POSTS]: (state, posts) => (state.usersPosts = posts),
+	[_.SET_POST_BY_ID]: (state, post) => (state.postById = post),
+	[_.SET_USER_LIKES]: (state, likes) => (state.userLikes = likes),
+	[_.SET_POST_BY_LIKES]: (state, posts) => (state.mostLikedPosts = posts),
+	[_.SET_SEARCH_POSTS]: (state, posts) => (state.searchedPosts = posts),
+	[_.SET_ALL_COMMENTS]: (state, comments) => (state.allComments = comments)
 };
 
 export default {

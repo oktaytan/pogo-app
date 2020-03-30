@@ -19,6 +19,7 @@
       </div>
     </a-col>
     <a-col :xs="{ span: 24 }" :md="{ span: 12 }" class="content">
+      <!-- Yeni kullanıcı kayıt formu -->
       <a-form
         id="customForm"
         :form="form"
@@ -31,6 +32,7 @@
           <span>Pogo' ya hoşgeldin</span>
         </div>
         <div class="animated fadeInRight">
+          <!-- Kullanıcı adı girme alanı -->
           <a-form-item>
             <a-input
               size="large"
@@ -48,6 +50,7 @@
               placeholder="Kullanıcı Adı"
             />
           </a-form-item>
+          <!-- Kullanıcı email adresi girme alanı -->
           <a-form-item>
             <a-input
               size="large"
@@ -69,6 +72,7 @@
               placeholder="Email"
             />
           </a-form-item>
+          <!-- Kullanıcı şifre girme alanı -->
           <a-form-item>
             <a-input-password
               size="large"
@@ -87,6 +91,7 @@
               placeholder="Şifre"
             />
           </a-form-item>
+          <!-- Kullanıcı şifre tekrar girme alanı -->
           <a-form-item>
             <a-input-password
               size="large"
@@ -138,11 +143,12 @@ export default {
   name: "Register",
   data: () => ({}),
   beforeCreate() {
+    // Register formu oluşturuluyor ( ant desing vue formu )
     this.form = this.$form.createForm(this, { name: "registerForm" });
   },
   methods: {
     ...mapActions(["USER_REGISTER"]),
-    // Şifreler birbiri ile eşleşiyor mu ?
+    // Şifreler birbiri ile eşleşiyor mu diye kontrol sağlanıyor
     compareToFirstPassword(rule, value, callback) {
       const form = this.form;
       if (value && value !== form.getFieldValue("password")) {
@@ -167,7 +173,7 @@ export default {
 
       this.form.validateFields((err, values) => {
         if (!err) {
-          // Form bilgilerinde hata yoksa registeristeği gönderiliyor
+          // Form bilgilerinde hata yoksa kullanıcı kaydı için action tetikleniyor
           this.USER_REGISTER(values)
             .then(res => {
               if (!res.error && res.user_added) {

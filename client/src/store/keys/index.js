@@ -37,7 +37,6 @@ export const SET_POST_BY_LIKES = 'SET_POST_BY_LIKES';
 export const SET_USER_LIKES = 'SET_USER_LIKES';
 export const SET_SEARCH_POSTS = 'SET_SEARCH_POSTS';
 export const SET_ALL_COMMENTS = 'SET_ALL_COMMENTS';
-
 // getters
 export const GET_ALL_POSTS = 'GET_ALL_POSTS';
 export const GET_USERS_POSTS = 'GET_USERS_POSTS';

@@ -15,6 +15,7 @@
         <span v-if="!collapsed">Pogo</span>
       </router-link>
     </div>
+    <!-- Sol navigasyon menüsü -->
     <a-menu
       theme="dark"
       mode="inline"
@@ -47,7 +48,7 @@ export default {
   data() {
     return {
       collapsed: false,
-      key: localStorage.getItem("pogo_key")
+      key: localStorage.getItem("pogo_key") // Seçili menü anahtarı
         ? JSON.parse(localStorage.getItem("pogo_key"))
         : "1"
     };
@@ -61,11 +62,14 @@ export default {
     }
   },
   methods: {
+    // Menu her değiştiğinde "route" 'dan hangi sayfadaysak
+    // ona ait anahtar localStorage' a ayarlanıyor
     changeMenu(path) {
       this.$router.push(path);
       this.routeChange();
       localStorage.setItem("pogo_key", JSON.stringify(this.key));
     },
+    // Route her değiştiğinde gelinen sayfanın ismine göre anahtar seçiliyor
     routeChange() {
       switch (this.$route.name) {
         case "Anasayfa":

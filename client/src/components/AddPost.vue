@@ -1,10 +1,12 @@
 <template>
   <div>
     <a-layout-header class="home_layout_content_header animated fadeInDown">
+      <!-- Yeni gönderi ekleme formu -->
       <a-form :form="newPostForm" class="post_form" @submit.prevent="newPost">
         <a-avatar class="header_avatar">{{ userAvatar }}</a-avatar>
         <div class="post_form_items">
           <div class="post_form_items_data">
+            <!-- Yeni gönderi başlığı -->
             <a-form-item>
               <a-input
                 class="new_post_input"
@@ -13,6 +15,7 @@
                 @change="writePost"
               />
             </a-form-item>
+            <!-- Yeni gönderi gövdesi -->
             <a-form-item>
               <textarea-autosize
                 class="new_post_input"
@@ -58,7 +61,7 @@ export default {
   },
   data() {
     return {
-      newPostForm: this.$form.createForm(this, { name: "newPost" }),
+      newPostForm: this.$form.createForm(this, { name: "newPost" }), // Form initialize
       post: {
         title: "",
         body: "",
@@ -71,6 +74,7 @@ export default {
     };
   },
   watch: {
+    // Route profil sayfasına gidiyorsa form resetleniyor
     $route(val) {
       if (val.name === "profile") {
         this.post.title = "";
@@ -80,15 +84,18 @@ export default {
   },
   computed: {
     ...mapGetters(["GET_USER"]),
+    // Avatar kullanıcı adının ilk iki harfinden oluşturuluyor
     userAvatar() {
       return this.GET_USER && this.GET_USER.username.slice(0, 2).toUpperCase();
     },
+    // Eklenebilecek gönderinin maksimum değeri ayarlanıyor
     maxLength() {
       return parseInt(this.post.body.split("").length - 1);
     }
   },
   methods: {
     ...mapActions(["ADD_NEW_POST", "FETCH_USERS_POSTS"]),
+    // Gönderi başlığı ve gövdesi boş değilse paylaş butonu aktif hale geliyor
     writePost() {
       if (this.post.title !== "" && this.post.body !== "") {
         this.disabled = false;
@@ -96,6 +103,7 @@ export default {
         this.disabled = true;
       }
     },
+    // Yeni gönderi için aciton tetikleniyor
     newPost() {
       this.post.user_id = this.GET_USER.id;
       this.ADD_NEW_POST(this.post).then(res => {

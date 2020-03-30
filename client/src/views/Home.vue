@@ -38,6 +38,7 @@ export default {
     Posts
   },
   mounted() {
+    // Sayfa yenilenmesi ile kullanıcı bilgilerini state ekleyecek action tetikleniyor
     this.USER_REFRESH();
   },
   computed: {

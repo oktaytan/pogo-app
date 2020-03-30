@@ -19,6 +19,7 @@
       </div>
     </a-col>
     <a-col :xs="{ span: 24 }" :md="{ span: 12 }" class="content">
+      <!-- Login formu -->
       <a-form
         id="customForm"
         :form="form"
@@ -30,6 +31,7 @@
           <span>Paylaşıma katıl</span>
         </div>
         <div class="animated fadeInRight">
+          <!-- Kullanıcı adı girme alanı -->
           <a-form-item>
             <a-input
               size="large"
@@ -47,6 +49,7 @@
               placeholder="Kullanıcı Adı"
             />
           </a-form-item>
+          <!-- Kullanıcı şifre girme alanı -->
           <a-form-item>
             <a-input-password
               size="large"
@@ -62,6 +65,7 @@
               placeholder="Şifre"
             />
           </a-form-item>
+          <!-- Beni hatırla seçim alanı -->
           <a-form-item>
             <a-checkbox
               v-decorator="[
@@ -110,15 +114,18 @@ export default {
     loading: false
   }),
   beforeCreate() {
+    // Login formu oluşturuluyor ( ant desing vue formu )
     this.form = this.$form.createForm(this, {
       name: "loginForm",
       mapPropsToFields: () => {
         return {
+          // Kullanıcı adı localStorage' dan alınıp ilgili alana yazılıyor
           username: this.$form.createFormField({
             value: localStorage.getItem("pogo_login")
               ? JSON.parse(localStorage.getItem("pogo_login")).username
               : ""
           }),
+          // Beni Hatırla seçemi localStorage' dan alınıp ilgili alana yazılıyor
           remember: this.$form.createFormField({
             value: localStorage.getItem("pogo_login")
               ? JSON.parse(localStorage.getItem("pogo_login")).remember
@@ -163,7 +170,7 @@ export default {
             password: values.password
           };
 
-          // login isteği
+          // Login yapacak action tetikleniyor
           this.USER_LOGIN(user)
             .then(res => {
               if (res.token) {

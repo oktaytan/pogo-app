@@ -3,25 +3,25 @@
     class="posts_container"
     :style="{ height: GET_TOP_BAR_SHOW ? '46vh' : '65vh' }"
   >
+    <!-- Yeni gönderi için loader -->
     <loader-skeleton
       v-if="GET_NEW_POST_LOADING"
       class="animated fadeIn"
       :rows="0"
     />
-    <a-list
-      itemLayout="vertical"
-      size="small"
-      :dataSource="searchedPosts.length > 0 ? searchedPosts : GET_USERS_POSTS"
-    >
+    <!-- Kullanıcının kendi gönderileri -->
+    <a-list itemLayout="vertical" size="small">
       <a-list-item
-        slot="renderItem"
-        slot-scope="post"
+        v-for="post in searchedPosts.length > 0
+          ? searchedPosts
+          : GET_USERS_POSTS"
         ref="postItem"
-        key="post.id"
+        :key="post.id"
         :style="{ padding: '1.5rem', position: 'relative' }"
         class="post_item"
       >
         <div class="click_area" @click.stop="() => detailShow(post.id)"></div>
+        <!-- Gönderi başlığı ve oluşturulma zamanı -->
         <a-list-item-meta :style="{ marginBottom: '0' }">
           <div
             class="post_user_wrap"
@@ -32,6 +32,7 @@
             <span class="post_date" style="margin-left: 1rem">{{
               $moment(post.created_at).fromNow()
             }}</span>
+            <!-- Gönderi silme butonu -->
             <a-popconfirm
               :style="{ float: 'right', position: 'relative' }"
               placement="topRight"
@@ -49,6 +50,7 @@
             </a-popconfirm>
           </div>
         </a-list-item-meta>
+        <!-- Gönderi gövdesi -->
         <div style="margin-top: -1.5rem; width: 85%">
           {{ post.body.slice(0, 200) }}...
           <a-checkable-tag>devamı</a-checkable-tag>
@@ -87,9 +89,11 @@ export default {
   },
   methods: {
     ...mapActions(["DELETE_POST"]),
+    // Gönderiye tıklandığında detay sayfasına gidiyor
     detailShow(id) {
       this.$router.push({ name: "Detaylar", params: { id } });
     },
+    // Gönderinin silinmesi için action tetikleniyor
     deletePost(post) {
       this.DELETE_POST(post.id).then(res => {
         if (res.error) {
