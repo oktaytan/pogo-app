@@ -1,5 +1,5 @@
 <template>
-  <div class="logout_wrap">
+  <div class="logout_wrap animated fadeIn">
     <div class="logout_content">
       <img src="../assets/logo.svg" class="logout_img" />
       <p>Pogo' dan çıkmak üzeresin!</p>

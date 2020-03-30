@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import PageHeader from "./PageHeader";
 
 export default {
@@ -88,6 +88,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["ADD_NEW_POST", "FETCH_USERS_POSTS"]),
     writePost() {
       if (this.post.title !== "" && this.post.body !== "") {
         this.disabled = false;
@@ -96,7 +97,16 @@ export default {
       }
     },
     newPost() {
-      console.log(this.post);
+      this.post.user_id = this.GET_USER.id;
+      this.ADD_NEW_POST(this.post).then(res => {
+        if (res.result.success) {
+          this.FETCH_USERS_POSTS(this.GET_USER.username).then(() => {
+            this.$message.success(res.result.message);
+            this.post.title = "";
+            this.post.body = "";
+          });
+        }
+      });
     }
   }
 };

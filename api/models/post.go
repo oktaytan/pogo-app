@@ -111,3 +111,16 @@ type LikedUser struct {
 	UserID string `json:"user_id"`
 	Liked  int    `json:"liked"`
 }
+
+type LikedPost struct {
+	ID     int    `json:"id"`
+	PostID string `json:"post_id"`
+	Liked  int    `json:"liked"`
+}
+
+type LikedPosts []LikedPost
+
+type UserLikes struct {
+	UserID     string     `json:"user_id"`
+	LikedPosts LikedPosts `json:"liked_posts"`
+}

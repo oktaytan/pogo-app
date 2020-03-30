@@ -186,7 +186,7 @@ export default {
       if (author_id === this.GET_USER.id) {
         this.DELETE_COMMENT(comment_id)
           .then(res => {
-            this.$message.success("Paylaşım kaldırıldı!");
+            this.$message.success("Yorum kaldırıldı!");
             this.fetchPost();
           })
           .catch(err => this.$message.error(err.message));

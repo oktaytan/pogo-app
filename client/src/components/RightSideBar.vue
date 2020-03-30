@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 import Loader from "../components/Loader";
 import RightList from "./RightList";
 
@@ -44,74 +45,27 @@ export default {
       loading: true,
       searching: false,
       searchText: "",
-      posts: [
-        {
-          id: 1,
-          title: "Title 1",
-          likes: 34
-        },
-        {
-          id: 2,
-          title: "Title 2",
-          likes: 324
-        },
-        {
-          id: 3,
-          title: "Title 3",
-          likes: 455
-        },
-        {
-          id: 4,
-          title: "Title 4",
-          likes: 324
-        },
-        {
-          id: 5,
-          title: "Title 5",
-          likes: 455
-        }
-      ],
-      postsSearch: [
-        {
-          id: 1,
-          title: "Search 1",
-          likes: 34
-        },
-        {
-          id: 2,
-          title: "Search 2",
-          likes: 324
-        },
-        {
-          id: 3,
-          title: "Search 3",
-          likes: 455
-        },
-        {
-          id: 1,
-          title: "Search 1",
-          likes: 34
-        },
-        {
-          id: 2,
-          title: "Search 2",
-          likes: 324
-        },
-        {
-          id: 3,
-          title: "Search 3",
-          likes: 455
-        }
-      ]
+      posts: [],
+      postsSearch: []
     };
   },
+  computed: {
+    ...mapGetters(["GET_POST_BY_LIKES", "GET_SEARCH_POSTS"])
+  },
   mounted() {
-    setTimeout(() => (this.loading = false), 2000);
+    this.FETCH_POST_BY_LIKES().then(res => {
+      this.posts = this.GET_POST_BY_LIKES;
+      this.loading = false;
+    });
   },
   methods: {
+    ...mapActions(["FETCH_POST_BY_LIKES", "FETCH_SEARCH_POSTS"]),
     onSearch() {
       if (this.searchText != "") {
         this.searching = true;
+        this.FETCH_SEARCH_POSTS({ search: this.searchText }).then(res => {
+          this.postsSearch = this.GET_SEARCH_POSTS;
+        });
       } else {
         this.searching = false;
       }

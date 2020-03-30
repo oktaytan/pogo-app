@@ -11,14 +11,23 @@
         <a-icon
           type="star"
           class="post_actions_icon like"
-          :theme="isLiked"
+          theme="outlined"
           @click.stop="liked"
           :style="{
-            color: isLiked == 'filled' ? '#f1c40f' : '',
-            animationName: isLiked == 'filled' ? 'bounce' : ''
+            color: isLiked ? '#f1c40f' : '',
+            animationName: likeChange && isLiked ? 'bounce' : ''
           }"
         />
       </a-tooltip>
+      <span
+        v-if="!myPost"
+        :style="{
+          animation: likeChange ? 'likeChange 0.4s linear forwards' : 'none',
+          marginLeft: '0.4rem'
+        }"
+        class="like_count"
+        >{{ likes }}
+      </span>
       <span
         v-if="myPost"
         :style="{
@@ -26,30 +35,31 @@
           marginLeft: '0.4rem'
         }"
         class="like_count"
-        >{{ post ? post.likes : "0" }}
-        <span style="margin-left: 0.3rem">beğeni</span></span
-      >
-      <span
-        v-else
-        :style="{
-          animation: likeChange ? 'likeChange 0.4s linear forwards' : 'none'
-        }"
-        class="like_count"
-        >{{ likes }}</span
+        >{{ likes }} <span style="margin-left: 0.3rem">beğeni</span></span
       >
     </div>
-    <a-tooltip placement="top" v-else>
+    <div class="detail_action" v-if="!details && myPost">
+      <span
+        :style="{
+          animation: likeChange ? 'likeChange 0.4s linear forwards' : 'none',
+          marginLeft: '0.4rem'
+        }"
+        class="like_count"
+        >{{ likes }} <span style="margin-left: 0.3rem">beğeni</span></span
+      >
+    </div>
+    <a-tooltip placement="top" v-if="!details && !myPost">
       <template slot="title">
-        <span>{{ post ? post.likes : "0" }} beğeni</span>
+        <span>{{ likes }} beğeni</span>
       </template>
       <a-icon
         type="star"
         class="post_actions_icon like"
-        :theme="isLiked"
+        theme="outlined"
         @click.stop="liked"
         :style="{
-          color: isLiked == 'filled' ? '#f1c40f' : '',
-          animationName: isLiked == 'filled' ? 'bounce' : ''
+          color: isLiked ? '#f1c40f' : '',
+          animationName: likeChange && isLiked ? 'bounce' : ''
         }"
       />
     </a-tooltip>
@@ -130,7 +140,7 @@
       <a-icon
         type="highlight"
         class="post_actions_icon comment"
-        :theme="isCommented"
+        theme="outlined"
         @click.stop="openCommentModal"
         :style="{
           color: isCommented == 'filled' ? '#2ecc71' : '',
@@ -186,7 +196,7 @@
     </a-tooltip>
 
     <a-popconfirm
-      v-if="myPost"
+      v-if="myPost && details"
       :style="{ float: 'right', position: 'relative', marginLeft: '8px' }"
       placement="top"
       title="Bu paylaşımı kaldırmak üzeresiniz?"
@@ -217,12 +227,14 @@ export default {
   data() {
     return {
       loading: false,
-      isLiked: "outlined",
       isCommented: "outlined",
       isShared: false,
       likeChange: false,
+      userLikes: [],
+      isLiked: false,
       comment: "",
       likes: 0,
+      likedStatus: [],
       isTypeComment: false,
       commentModal: false,
       commentEmpty: false,
@@ -231,9 +243,13 @@ export default {
   },
   mounted() {
     this.likes = this.post.likes;
+    this.currentLiked();
+  },
+  updated() {
+    this.currentLiked();
   },
   computed: {
-    ...mapGetters(["GET_USER"]),
+    ...mapGetters(["GET_USER", "GET_USER_LIKES"]),
     maxLength() {
       return parseInt(this.comment.split("").length - 1);
     },
@@ -244,23 +260,48 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["ADD_COMMENT", "FETCH_POST_BY_ID", "LIKE_POST"]),
+    ...mapActions([
+      "ADD_COMMENT",
+      "FETCH_POST_BY_ID",
+      "POST_LIKE",
+      "USER_LIKED",
+      "FETCH_USER_LIKES",
+      "DELETE_POST"
+    ]),
+    currentLiked() {
+      this.FETCH_USER_LIKES(this.GET_USER.id).then(res => {
+        this.userLikes = this.GET_USER_LIKES.liked_posts;
+        let post = this.userLikes.filter(item => {
+          return item.post_id === this.post.id;
+        });
+        this.isLiked = post.length > 0 ? post[0].liked : false;
+      });
+    },
     liked() {
-      if (this.isLiked == "outlined") {
+      if (this.isLiked) {
         let currentLike = this.likes;
         const payload = {
           id: this.post.id,
-          likes: ++currentLike
+          likes: --currentLike
         };
 
-        this.LIKE_POST(payload)
+        this.POST_LIKE(payload)
           .then(res => {
             if (res.result.success) {
-              this.$emit("like");
+              const likedPayload = {
+                post_id: this.post.id,
+                user_id: this.GET_USER.id
+              };
+
               this.likes = res.likes;
-              this.isLiked = "filled";
-              this.likeChange = true;
-              setTimeout(() => (this.likeChange = false), 200);
+
+              this.USER_LIKED(likedPayload)
+                .then(() => {
+                  this.$emit("like");
+                  this.likeChange = true;
+                  setTimeout(() => (this.likeChange = false), 200);
+                })
+                .catch(err => this.$message.error(err.message));
             }
           })
           .catch(err => this.$message.error(err.message));
@@ -268,16 +309,25 @@ export default {
         let currentLike = this.likes;
         const payload = {
           id: this.post.id,
-          likes: --currentLike
+          likes: ++currentLike
         };
 
-        this.LIKE_POST(payload).then(res => {
+        this.POST_LIKE(payload).then(res => {
           if (res.result.success) {
-            this.$emit("like");
+            const likedPayload = {
+              post_id: this.post.id,
+              user_id: this.GET_USER.id
+            };
+
             this.likes = res.likes;
-            this.isLiked = "outlined";
-            this.likeChange = true;
-            setTimeout(() => (this.likeChange = false), 200);
+
+            this.USER_LIKED(likedPayload)
+              .then(() => {
+                this.$emit("like");
+                this.likeChange = true;
+                setTimeout(() => (this.likeChange = false), 200);
+              })
+              .catch(err => this.$message.error(err.message));
           }
         });
       }
@@ -323,9 +373,18 @@ export default {
           });
       }
     },
-    deletePost(e) {
-      console.log(e);
-      this.$message.success("Paylaşım kaldırıldı!");
+    deletePost() {
+      if (this.GET_USER.username === this.post.author.username) {
+        this.DELETE_POST(this.post.id).then(res => {
+          if (res.error) {
+            this.$message.error(res.message);
+          } else {
+            this.$message
+              .success("Gönderi kaldırıldı.", 0.3)
+              .then(() => this.$router.go(-1));
+          }
+        });
+      }
     },
     cancelComment(e) {
       e.stopPropagation();

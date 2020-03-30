@@ -16,21 +16,38 @@ export const GET_USER = 'GET_USER';
  */
 // actions
 export const FETCH_ALL_POSTS = 'FETCH_ALL_POSTS';
+export const FETCH_USERS_POSTS = 'FETCH_USERS_POSTS';
 export const FETCH_POST_BY_ID = 'FETCH_POST_BY_ID';
 export const FETCH_POST_BY_LIKES = 'FETCH_POST_BY_LIKES';
+export const FETCH_SEARCH_POSTS = 'FETCH_SEARCH_POSTS';
+export const FETCH_USER_LIKES = 'FETCH_USER_LIKES';
+export const FETCH_ALL_COMMENTS = 'FETCH_ALL_COMMENTS';
+export const ADD_NEW_POST = 'ADD_NEW_POST';
+export const DELETE_POST = 'DELETE_POST';
 export const POST_LIKE = 'POST_LIKE';
 export const SET_LIKE = 'SET_LIKE';
+export const USER_LIKED = 'USER_LIKED';
 export const ADD_COMMENT = 'ADD_COMMENT';
 export const DELETE_COMMENT = 'DELETE_COMMENT';
 // mutations
 export const SET_ALL_POSTS = 'SET_ALL_POSTS';
+export const SET_USERS_POSTS = 'SET_USERS_POSTS';
 export const SET_POST_BY_ID = 'SET_POST_BY_ID';
 export const SET_POST_BY_LIKES = 'SET_POST_BY_LIKES';
+export const SET_USER_LIKES = 'SET_USER_LIKES';
+export const SET_SEARCH_POSTS = 'SET_SEARCH_POSTS';
+export const SET_ALL_COMMENTS = 'SET_ALL_COMMENTS';
+
 // getters
 export const GET_ALL_POSTS = 'GET_ALL_POSTS';
+export const GET_USERS_POSTS = 'GET_USERS_POSTS';
 export const GET_POST_BY_ID = 'GET_POST_BY_ID';
 export const GET_POST_BY_LIKES = 'GET_POST_BY_LIKES';
 export const GET_LIKE = 'GET_LIKE';
+export const GET_USER_LIKES = 'GET_USER_LIKES';
+export const GET_SEARCH_POSTS = 'GET_SEARCH_POSTS';
+export const GET_ALL_COMMENTS = 'GET_ALL_COMMENTS';
+export const GET_NEW_POST_LOADING = 'GET_NEW_POST_LOADING';
 
 /*
  * UI KEYS

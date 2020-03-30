@@ -93,15 +93,22 @@
         {{ `&copy; ${new Date().getFullYear()} POGO, Inc.` }}
       </div>
     </a-col>
+    <Loader v-if="loading" />
   </a-row>
 </template>
 
 <script>
+import Loader from "../components/Loader";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Login",
-  data: () => ({}),
+  components: {
+    Loader
+  },
+  data: () => ({
+    loading: false
+  }),
   beforeCreate() {
     this.form = this.$form.createForm(this, {
       name: "loginForm",
@@ -159,8 +166,12 @@ export default {
           // login isteği
           this.USER_LOGIN(user)
             .then(res => {
-              if (res.is_login) {
-                this.$router.push("/");
+              if (res.token) {
+                this.loading = true;
+                this.$message.loading("Giriş yapılıyor", 1).then(() => {
+                  this.loading = false;
+                  this.$router.push("/");
+                });
               }
             })
             .catch(err => {

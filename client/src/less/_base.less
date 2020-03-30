@@ -231,3 +231,45 @@ body {
 		color: #9cb6ce;
 	}
 }
+
+.skeleton {
+	padding: 2rem;
+	border-bottom: 2px solid lighten(@body-background, 10%);
+	position: relative;
+
+	.skeleton_loader {
+		min-height: auto;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 3;
+		background-color: transparent;
+
+		img {
+			width: 25px;
+		}
+	}
+
+	.ant-skeleton.ant-skeleton-active .ant-skeleton-avatar {
+		background: linear-gradient(
+			45deg,
+			lighten(@body-background, 3%),
+			lighten(@body-background, 10%)
+		);
+		filter: blur(5px);
+	}
+
+	.ant-skeleton.ant-skeleton-active .ant-skeleton-content .ant-skeleton-title,
+	.ant-skeleton.ant-skeleton-active
+		.ant-skeleton-content
+		.ant-skeleton-paragraph
+		> li {
+		filter: blur(5px);
+		background: linear-gradient(
+			to left,
+			lighten(@body-background, 3%),
+			lighten(@body-background, 10%)
+		);
+		animation: ant-skeleton-loading 1.4s ease infinite;
+	}
+}

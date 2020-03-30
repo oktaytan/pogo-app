@@ -3,15 +3,25 @@
     class="posts_container"
     :style="{ height: GET_TOP_BAR_SHOW ? '78vh' : '100vh' }"
   >
-    <Loader v-if="loading" />
-    <a-list v-else itemLayout="vertical" size="large" :dataSource="posts">
+    <loader-skeleton
+      v-if="GET_NEW_POST_LOADING"
+      class="animated fadeIn"
+      :rows="2"
+    />
+    <loader v-if="loading" />
+    <a-list
+      v-else
+      itemLayout="vertical"
+      size="large"
+      :dataSource="GET_ALL_POSTS"
+    >
       <a-list-item
         slot="renderItem"
         slot-scope="post"
         ref="postItem"
         key="post.id"
         class="post_item"
-        @click="() => detailShow(post.id, post.comments)"
+        @click="() => detailShow(post.id)"
       >
         <a-list-item-meta>
           <div class="post_user_wrap" slot="title">
@@ -29,14 +39,21 @@
         </a-list-item-meta>
         {{ post.body.slice(0, 200) }}...
         <a-checkable-tag>devamı</a-checkable-tag>
-        <post-actions position="top" :post="post" />
+        <post-actions
+          position="top"
+          :post="post"
+          :details="false"
+          @like="getData"
+          :myPost="post.author.username === GET_USER.username ? true : false"
+        />
       </a-list-item>
     </a-list>
   </div>
 </template>
 
 <script>
-import Loader from "./Loader.vue";
+import Loader from "./Loader";
+import LoaderSkeleton from "./LoaderSkeleton";
 import PostActions from "./PostActions";
 
 import { mapGetters, mapActions } from "vuex";
@@ -44,7 +61,8 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Posts",
   components: {
-    Loader,
+    loader: Loader,
+    "loader-skeleton": LoaderSkeleton,
     "post-actions": PostActions
   },
   data() {
@@ -55,17 +73,26 @@ export default {
   },
   mounted() {
     this.loading = true;
-    this.FETCH_ALL_POSTS().then(data => {
-      this.posts = data;
-      this.loading = this.posts && false;
-    });
+    this.getData();
   },
   computed: {
-    ...mapGetters(["GET_TOP_BAR_SHOW", "GET_ALL_POSTS", "GET_USER"])
+    ...mapGetters([
+      "GET_TOP_BAR_SHOW",
+      "GET_ALL_POSTS",
+      "GET_USER",
+      "GET_NEW_POST_LOADING"
+    ])
   },
   methods: {
     ...mapActions(["FETCH_ALL_POSTS"]),
-    detailShow(id, comments) {
+    async getData() {
+      this.FETCH_ALL_POSTS()
+        .then(data => {
+          this.loading = this.GET_ALL_POSTS.length > 0 && false;
+        })
+        .catch(err => this.$message.error(err.message));
+    },
+    detailShow(id) {
       this.$router.push({ name: "Detaylar", params: { id } });
     }
   }

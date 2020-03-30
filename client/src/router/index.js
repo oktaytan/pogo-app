@@ -4,6 +4,7 @@ import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Logout from '../views/Logout.vue';
 import Register from '../views/Register.vue';
+import NotFound from '../views/NotFound.vue';
 import Settings from '../components/Settings.vue';
 import Profile from '../components/Profile.vue';
 import PostDetail from '../components/PostDetail.vue';
@@ -54,6 +55,13 @@ const routes = [
 		name: 'register',
 		component: Register,
 		meta: { noLogin: true }
+	},
+	// 404 NotFound
+	{
+		path: '*',
+		name: 'notFound',
+		component: NotFound,
+		meta: { noLogin: true, requiresAuth: false }
 	}
 ];
 

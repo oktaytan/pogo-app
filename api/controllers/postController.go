@@ -410,6 +410,7 @@ func LikedByUser(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(likedUser)
 		}
 	} else {
+		// Eğer gönderi beğenilmişse "liked" değeri "0" olarak, aksi takdirde "1" olarak ayarlanıyor
 		if likedUser.Liked == 0 {
 			likedUser.Liked = 1
 		} else {
@@ -430,12 +431,45 @@ func LikedByUser(w http.ResponseWriter, r *http.Request) {
 		// Gönderinin veritabanında olup olmadığı kontrol ediliyor
 		if rows == 0 {
 			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode(h.Error("Hata!"))
+			json.NewEncoder(w).Encode(h.Error("Gönderi bulunamadı!"))
 			return
 		} else {
 			json.NewEncoder(w).Encode(likedUser)
 		}
 	}
+}
+
+// Kullanıcının beğenileri
+func GetLikes(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "aplication/json")
+
+	// Beğenileri getirilecek kullanıcının id' si istek parametresinden alınıyor
+	params := mux.Vars(r)
+
+	var likedPosts m.LikedPosts
+	var userLikes m.UserLikes
+
+	// Kullanıcının beğenilerini getirecek sorgu hazırlanıyor
+	stmt, err := mainDB.Prepare("SELECT * FROM user_likes WHERE user_id = ?")
+	h.CheckErr(err)
+
+	// Kullanıcının beğenilerini getirecek sorgu calıştırılıyor
+	rows, errExec := stmt.Query(params["id"])
+	h.CheckErr(errExec)
+
+	for rows.Next() {
+		var likedPost m.LikedPost
+
+		err := rows.Scan(&likedPost.ID, &likedPost.PostID, &userLikes.UserID, &likedPost.Liked)
+		h.CheckErr(err)
+
+		likedPosts = append(likedPosts, likedPost)
+	}
+	userLikes.UserID = params["id"]
+
+	userLikes.LikedPosts = likedPosts
+
+	json.NewEncoder(w).Encode(userLikes)
 }
 
 // Gönderi silme
