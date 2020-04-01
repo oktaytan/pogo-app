@@ -81,9 +81,9 @@ const actions = {
 	},
 
 	// Beğeni sayısı sıralamasına göre gönerileri getirme
-	[_.FETCH_POST_BY_LIKES]: ({ commit }) => {
+	[_.FETCH_POST_BY_LIKES]: ({ commit }, limit) => {
 		return new Promise((resolve, reject) => {
-			AXIOS.get('/posts/liked')
+			AXIOS.get(`/posts/liked/${limit}`)
 				.then((res) => {
 					commit(_.SET_POST_BY_LIKES, res.data);
 					resolve(res.data);

@@ -23,7 +23,12 @@
           @backLiked="cancelSearch"
         />
         <!-- En çok beğeni alan gönderiler listesi -->
-        <right-list v-else :posts="posts" :search="false" />
+        <right-list
+          v-else
+          :posts="posts"
+          :search="false"
+          @change-limit="lm => fetchMostLikes(lm)"
+        />
       </div>
       <a-layout-footer :style="{ textAlign: 'center' }">
         {{ `&copy; ${new Date().getFullYear()} POGO, Inc.` }}
@@ -49,7 +54,8 @@ export default {
       searching: false,
       searchText: "",
       posts: [],
-      postsSearch: []
+      postsSearch: [],
+      limit: 5
     };
   },
   computed: {
@@ -57,13 +63,17 @@ export default {
   },
   mounted() {
     // Beğeni sayısına göre sıralanmış gönderiler alınıyor
-    this.FETCH_POST_BY_LIKES().then(res => {
-      this.posts = this.GET_POST_BY_LIKES;
-      this.loading = false;
-    });
+    this.fetchMostLikes(this.limit);
   },
   methods: {
     ...mapActions(["FETCH_POST_BY_LIKES", "FETCH_SEARCH_POSTS"]),
+    // En çok beğeni alan gönderileri getirme
+    fetchMostLikes(limit) {
+      this.FETCH_POST_BY_LIKES(limit).then(res => {
+        this.posts = this.GET_POST_BY_LIKES;
+        this.loading = false;
+      });
+    },
     // Arama yapılıyor
     onSearch() {
       if (this.searchText != "") {

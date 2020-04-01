@@ -190,9 +190,14 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 func MostLikedPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "aplication/json")
 
-	// Gönderiler için sql sorgusu çalıştırılıyor
-	rows, err := mainDB.Query("SELECT * FROM posts AS p INNER JOIN (SELECT id, username, email FROM users) AS u ON p.user_id = u.id ORDER BY p.likes DESC LIMIT 5")
+	// Getirilecek gönderinin sayısı istek parametresinden alınıyor
+	params := mux.Vars(r)
 
+	// Gönderiler için sql sorgusu hazırlanıyor
+	stmt, err := mainDB.Prepare("SELECT * FROM posts AS p INNER JOIN (SELECT id, username, email FROM users) AS u ON p.user_id = u.id ORDER BY p.likes DESC LIMIT ?")
+	h.CheckErr(err)
+
+	rows, err := stmt.Query(params["limit"])
 	h.CheckErr(err)
 
 	var posts m.Posts
