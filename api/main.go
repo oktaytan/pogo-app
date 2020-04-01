@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"pogo/api/routers"
 
@@ -22,6 +23,8 @@ func main() {
 	n := negroni.Classic()
 	n.Use(c)
 	n.UseHandler(router)
+
+	log.Println("Server started on port 5000")
 
 	// Server listening
 	http.ListenAndServe(":5000", n)
