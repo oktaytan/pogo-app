@@ -29,8 +29,16 @@ const actions = {
 		return new Promise((resolve, reject) => {
 			AXIOS.get('/posts')
 				.then((res) => {
-					commit('SET_ALL_POSTS', res.data);
-					resolve(res.data);
+					if (res.data) {
+						commit(_.SET_ALL_POSTS, res.data);
+						resolve(res.data);
+					} else {
+						const data = {
+							emty: true,
+							message: 'Henüz hiç gönderi yok!'
+						};
+						resolve(data);
+					}
 				})
 				.catch((err) => reject(err));
 		});
@@ -41,7 +49,7 @@ const actions = {
 		return new Promise((resolve, reject) => {
 			AXIOS.get(`/${username}/posts`)
 				.then((res) => {
-					commit('SET_USERS_POSTS', res.data);
+					commit(_.SET_USERS_POSTS, res.data);
 					resolve(res.data);
 				})
 				.catch((err) => reject(err));
@@ -53,7 +61,7 @@ const actions = {
 		return new Promise((resolve, reject) => {
 			AXIOS.get('/comments')
 				.then((res) => {
-					commit('SET_ALL_COMMENTS', res.data);
+					commit(_.SET_ALL_COMMENTS, res.data);
 					resolve(res.data);
 				})
 				.catch((err) => reject(err));
@@ -65,7 +73,7 @@ const actions = {
 		return new Promise((resolve, reject) => {
 			AXIOS.get(`/posts/${id}`)
 				.then((res) => {
-					commit('SET_POST_BY_ID', res.data);
+					commit(_.SET_POST_BY_ID, res.data);
 					resolve(res.data);
 				})
 				.catch((err) => reject(err));
@@ -77,7 +85,7 @@ const actions = {
 		return new Promise((resolve, reject) => {
 			AXIOS.get('/posts/liked')
 				.then((res) => {
-					commit('SET_POST_BY_LIKES', res.data);
+					commit(_.SET_POST_BY_LIKES, res.data);
 					resolve(res.data);
 				})
 				.catch((err) => reject(err));
@@ -89,7 +97,7 @@ const actions = {
 		return new Promise((resolve, reject) => {
 			AXIOS.post('/posts/search', JSON.stringify(search))
 				.then((res) => {
-					commit('SET_SEARCH_POSTS', res.data);
+					commit(_.SET_SEARCH_POSTS, res.data);
 					resolve(res.data);
 				})
 				.catch((err) => reject(err));
@@ -104,7 +112,7 @@ const actions = {
 				.then((resData) => {
 					AXIOS.get('/posts')
 						.then((res) => {
-							commit('SET_ALL_POSTS', res.data);
+							commit(_.SET_ALL_POSTS, res.data);
 							resolve(res.data);
 							state.newPostLoading = false;
 						})
@@ -122,7 +130,7 @@ const actions = {
 				.then((resData) => {
 					AXIOS.get('/posts')
 						.then((res) => {
-							commit('SET_ALL_POSTS', res.data);
+							commit(_.SET_ALL_POSTS, res.data);
 							resolve(res.data);
 						})
 						.catch((err) => reject(err));
@@ -151,7 +159,7 @@ const actions = {
 		return new Promise((resolve, reject) => {
 			AXIOS.get(`/likes/${id}`)
 				.then((res) => {
-					commit('SET_USER_LIKES', res.data);
+					commit(_.SET_USER_LIKES, res.data);
 					resolve(res.data);
 				})
 				.catch((err) => reject(err));

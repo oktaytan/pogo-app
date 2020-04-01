@@ -4,11 +4,7 @@
     :style="{ height: GET_TOP_BAR_SHOW ? '46vh' : '65vh' }"
   >
     <!-- Yeni gönderi için loader -->
-    <loader-skeleton
-      v-if="GET_NEW_POST_LOADING"
-      class="animated fadeIn"
-      :rows="0"
-    />
+    <loader-skeleton v-if="GET_NEW_POST_LOADING" :rows="0" />
     <!-- Kullanıcının kendi gönderileri -->
     <a-list itemLayout="vertical" size="small">
       <a-list-item

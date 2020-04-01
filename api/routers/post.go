@@ -10,12 +10,15 @@ import (
 
 func SetPostRoutes(router *mux.Router) *mux.Router {
 
+	// Live connection
+	router.Handle("/api/live", negroni.New(negroni.WrapFunc(c.Live))).Methods("GET")
+
 	// All posts
-	router.Handle("/api/posts", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.GetAllPosts))).Methods("GET")
+	router.Handle("/api/posts", negroni.New(negroni.WrapFunc(c.GetAllPosts))).Methods("GET")
 	// Only user's posts
 	router.Handle("/api/{username}/posts", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.GetOwnPosts))).Methods("GET")
 	// Get most liked posts
-	router.Handle("/api/posts/liked", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.MostLikedPosts))).Methods("GET")
+	router.Handle("/api/posts/liked", negroni.New(negroni.WrapFunc(c.MostLikedPosts))).Methods("GET")
 	// Get post by id
 	router.Handle("/api/posts/{id}", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.GetPost))).Methods("GET")
 	// Create Post

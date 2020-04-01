@@ -19,7 +19,7 @@ const actions = {
 						// Hata yoksa kullanıcı biilgileri
 						// token ile birlikte localStorage ekleniyor
 						localStorage.setItem('pogo_user', JSON.stringify(res.data));
-						commit('SET_USER', res.data);
+						commit(_.SET_USER, res.data);
 						resolve(res.data);
 					} else {
 						reject(res.data);
@@ -37,7 +37,7 @@ const actions = {
 			if (localStorage.getItem('pogo_user')) {
 				AXIOS.get('/logout')
 					.then((res) => {
-						commit('SET_USER', res.data);
+						commit(_.SET_USER, res.data);
 						resolve(res.data);
 					})
 					.catch((err) => {
@@ -73,7 +73,7 @@ const actions = {
 			localStorage.getItem('pogo_user') &&
 			JSON.parse(localStorage.getItem('pogo_user'));
 
-		commit('SET_USER', userData);
+		commit(_.SET_USER, userData);
 	}
 };
 

@@ -24,9 +24,9 @@ const getters = {
 
 const actions = {
 	// Sağ barın açık / kapalı olma durumu ayarı
-	[_.CHANGE_RIGHT_BAR_SHOW]: ({ commit }) => commit('SET_RIGHT_BAR_SHOW'),
+	[_.CHANGE_RIGHT_BAR_SHOW]: ({ commit }) => commit(_.SET_RIGHT_BAR_SHOW),
 	// Üst barın açık / kapalı olma durumu ayarı
-	[_.CHANGE_TOP_BAR_SHOW]: ({ commit }) => commit('SET_TOP_BAR_SHOW')
+	[_.CHANGE_TOP_BAR_SHOW]: ({ commit }) => commit(_.SET_TOP_BAR_SHOW)
 };
 
 const mutations = {
