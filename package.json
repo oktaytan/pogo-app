@@ -4,7 +4,9 @@
 	"description": "Gönderi paylaşımı platformu",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"go:run": "cd api && go run main.go",
+		"vue:run": "npm run serve --prefix client",
+		"start": "concurrently \"npm run go:run\" \"npm run vue:run\""
 	},
 	"keywords": [],
 	"author": "Oktay Tanrıkulu",
