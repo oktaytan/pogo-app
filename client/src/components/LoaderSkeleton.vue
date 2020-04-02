@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import Loader from "./Loader";
 
 export default {

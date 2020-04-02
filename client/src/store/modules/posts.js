@@ -114,7 +114,9 @@ const actions = {
 						.then((res) => {
 							commit(_.SET_ALL_POSTS, res.data);
 							resolve(res.data);
-							state.newPostLoading = false;
+							setTimeout(() => {
+								state.newPostLoading = false;
+							}, 300);
 						})
 						.catch((err) => reject(err));
 					resolve(resData.data);

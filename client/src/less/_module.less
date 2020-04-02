@@ -63,12 +63,12 @@
 		}
 		.new_post_submit_btn {
 			font-weight: 600;
+			border: none;
 
 			&:disabled {
-				background-color: @primary-color;
+				background-color: rgba(darken(@primary-color, 30%), 0.5);
 				border: none;
-				color: darken(@primary-color, 100%);
-				opacity: 0.3;
+				color: rgba(white, 0.5);
 			}
 		}
 	}
@@ -97,13 +97,19 @@
 	}
 }
 
+.disabled_btn {
+	border: none !important;
+}
+
 .disabled_btn:disabled {
-	background-color: darken(@body-background, 5%);
-	color: #617486;
+	background-color: rgba(darken(@primary-color, 30%), 0.5);
+	border: none;
+	color: rgba(white, 0.5);
 	transition: background-color 0.25s ease-out;
 
 	&:hover {
 		color: #617486;
+		border: none;
 		background-color: darken(@body-background, 6%);
 	}
 }
@@ -119,7 +125,7 @@
 }
 
 .delete {
-	color: lighten(@body-background, 10%);
+	color: rgba(#617486, 0.4);
 	position: absolute;
 	top: 50%;
 	right: -1.5rem;
@@ -159,5 +165,30 @@
 	&:hover {
 		background-color: rgba(lighten(@primary-color, 15%), 0.2);
 		color: darken(@primary-color, 5%);
+	}
+}
+
+.search_input_wrap {
+	position: relative;
+
+	.search_icon {
+		position: absolute;
+		top: 52%;
+		right: 0.5rem;
+		transform: translateY(-50%);
+		color: #7c97b1 !important;
+		width: 32px;
+		height: 32px;
+		line-height: 32px;
+		border-radius: 50%;
+		transition: all 0.25s ease-out;
+		padding: 0;
+		margin: 0;
+		border: 1px solid transparent;
+
+		&:hover {
+			background: rgba(@primary-color, 0.1);
+			color: @primary-color !important;
+		}
 	}
 }

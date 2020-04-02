@@ -79,6 +79,15 @@
         centered
         :destroyOnClose="true"
         :visible="commentModal"
+        :style="{
+          color: GET_THEME
+            ? GET_COLORS.dark.textPrimary
+            : GET_COLORS.light.textPrimary,
+          background: GET_THEME
+            ? GET_COLORS.dark.background
+            : GET_COLORS.light.background,
+          paddingBottom: '0'
+        }"
         @ok="addComment"
         :okText="commentAdded ? 'Eklendi' : 'Yorumla'"
         :okButtonProps="{ props: { disabled: commentAdded } }"
@@ -88,10 +97,22 @@
       >
         <a-timeline class="comment_timeline">
           <!-- Gönderinin içeriği -->
-          <a-timeline-item>
-            <a-avatar type="icon" slot="dot" class="posted_avatar">{{
-              post.author.username | userAvatar
-            }}</a-avatar>
+          <a-timeline-item :style="{ background: 'none' }">
+            <a-avatar
+              type="icon"
+              slot="dot"
+              class="posted_avatar"
+              :style="{
+                background: GET_THEME
+                  ? GET_COLORS.dark.backgroundLight
+                  : GET_COLORS.light.backgroundLight,
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary,
+                fontWeight: 'bold'
+              }"
+              >{{ post.author.username | userAvatar }}</a-avatar
+            >
             <div class="post_detail_wrap">
               <div>
                 <span class="username">{{ post.author.username }}</span>
@@ -99,17 +120,45 @@
                   $moment(post.created_at).fromNow()
                 }}</span>
               </div>
-              <p class="title">{{ post.title }}</p>
-              <p class="body">
+              <p
+                class="title"
+                :style="{
+                  color: GET_THEME
+                    ? GET_COLORS.dark.textPrimary
+                    : GET_COLORS.light.textPrimary
+                }"
+              >
+                {{ post.title }}
+              </p>
+              <p
+                class="body"
+                :style="{
+                  color: GET_THEME
+                    ? GET_COLORS.dark.textPrimary
+                    : GET_COLORS.light.textPrimary
+                }"
+              >
                 {{ post.body }}
               </p>
             </div>
           </a-timeline-item>
           <!-- Yeni yorumun yapıldığına ekleneceği alan -->
-          <a-timeline-item>
-            <a-avatar type="icon" slot="dot" class="posted_avatar">{{
-              GET_USER.username | userAvatar
-            }}</a-avatar>
+          <a-timeline-item :style="{ background: 'none' }">
+            <a-avatar
+              type="icon"
+              slot="dot"
+              class="posted_avatar"
+              :style="{
+                background: GET_THEME
+                  ? GET_COLORS.dark.backgroundLight
+                  : GET_COLORS.light.backgroundLight,
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary,
+                fontWeight: 'bold'
+              }"
+              >{{ GET_USER.username | userAvatar }}</a-avatar
+            >
             <div
               v-if="!commentAdded"
               class="comment_textarea_wrap"
@@ -124,9 +173,24 @@
                 class="comment_textarea"
                 :min-height="100"
                 :max-height="130"
+                :style="{
+                  background: GET_THEME
+                    ? GET_COLORS.dark.backgroundLight
+                    : GET_COLORS.light.backgroundLight,
+                  color: GET_THEME
+                    ? GET_COLORS.dark.textPrimary
+                    : GET_COLORS.light.textPrimary
+                }"
               />
 
-              <span class="comment_length" v-if="comment ? true : false"
+              <span
+                class="comment_length"
+                v-if="comment ? true : false"
+                :style="{
+                  color: GET_THEME
+                    ? GET_COLORS.dark.textPrimary
+                    : GET_COLORS.light.textPrimary
+                }"
                 >{{ maxLength }} / 200</span
               >
               <span v-if="commentEmpty" class="comment_error animated fadeInUp"
@@ -137,10 +201,27 @@
               <Loader v-if="loading" />
               <div v-else>
                 <div style="width:100%; position: relative">
-                  <span class="username">{{ GET_USER.username }}</span>
+                  <span
+                    class="username"
+                    :style="{
+                      color: GET_THEME
+                        ? GET_COLORS.dark.textSecondary
+                        : GET_COLORS.light.textSecondary
+                    }"
+                    >{{ GET_USER.username }}</span
+                  >
                   <span class="date">{{ $moment().fromNow() }}</span>
                 </div>
-                <p class="body">{{ comment }}</p>
+                <p
+                  class="body"
+                  :style="{
+                    color: GET_THEME
+                      ? GET_COLORS.dark.textPrimary
+                      : GET_COLORS.light.textPrimary
+                  }"
+                >
+                  {{ comment }}
+                </p>
               </div>
             </div>
           </a-timeline-item>
@@ -170,26 +251,53 @@
           id="sharePopconfirm"
         >
           <template slot="overlay">
-            <p class="share_pl_wrap">
+            <p
+              class="share_pl_wrap"
+              :style="{
+                background: GET_THEME
+                  ? GET_COLORS.dark.background
+                  : GET_COLORS.light.background
+              }"
+            >
               <a-icon
                 type="facebook"
                 class="share_pl"
                 @click="() => share('Facebook')"
+                :style="{
+                  color: GET_THEME
+                    ? GET_COLORS.dark.textSecondary
+                    : GET_COLORS.light.textSecondary
+                }"
               />
               <a-icon
                 type="twitter"
                 class="share_pl"
                 @click="() => share('Twitter')"
+                :style="{
+                  color: GET_THEME
+                    ? GET_COLORS.dark.textSecondary
+                    : GET_COLORS.light.textSecondary
+                }"
               />
               <a-icon
                 type="linkedin"
                 class="share_pl"
                 @click="() => share('LinkedIn')"
+                :style="{
+                  color: GET_THEME
+                    ? GET_COLORS.dark.textSecondary
+                    : GET_COLORS.light.textSecondary
+                }"
               />
               <a-icon
                 type="medium"
                 class="share_pl"
                 @click="() => share('Medium')"
+                :style="{
+                  color: GET_THEME
+                    ? GET_COLORS.dark.textSecondary
+                    : GET_COLORS.light.textSecondary
+                }"
               />
             </p>
           </template>
@@ -209,7 +317,11 @@
     <!-- Eğer gönderi kullanıcının gönderisi is silebilir. -->
     <a-popconfirm
       v-if="myPost && details"
-      :style="{ float: 'right', position: 'relative', marginLeft: '8px' }"
+      :style="{
+        float: 'right',
+        position: 'relative',
+        marginLeft: '8px'
+      }"
       placement="top"
       title="Bu paylaşımı kaldırmak üzeresiniz?"
       @confirm="deletePost"
@@ -220,7 +332,10 @@
         type="delete"
         theme="filled"
         class="delete"
-        :style="{ top: '1rem', right: '0' }"
+        :style="{
+          top: '1rem',
+          right: '0'
+        }"
       />
     </a-popconfirm>
   </div>
@@ -264,7 +379,7 @@ export default {
     this.currentLiked();
   },
   computed: {
-    ...mapGetters(["GET_USER", "GET_USER_LIKES"]),
+    ...mapGetters(["GET_USER", "GET_USER_LIKES", "GET_THEME", "GET_COLORS"]),
     // Yeni eklenecek yorumun uzunluğu ayarlanıyor
     maxLength() {
       return parseInt(this.comment.split("").length - 1);

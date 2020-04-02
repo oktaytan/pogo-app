@@ -172,7 +172,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			if errPass != nil {
 				json.NewEncoder(w).Encode(h.Error("Şifre hatalı!"))
 			} else {
-				mySigningKey := []byte("covid-19")
+				mySigningKey := []byte("EVDE-KAL")
 
 				type MyCustomClaims struct {
 					Username string `json:"username"`

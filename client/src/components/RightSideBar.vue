@@ -1,18 +1,35 @@
 <template>
   <a-layout-sider
     class="home_layout_sidebar home_layout_sidebar--left animated fadeInRight"
-    :style="{ minWidth: '450px', padding: '1rem 2rem' }"
+    :style="{
+      minWidth: '450px',
+      padding: '1rem 2rem',
+      background: GET_THEME
+        ? GET_COLORS.dark.background
+        : GET_COLORS.light.background
+    }"
   >
     <a-row>
       <!-- Gönderi arama alanı -->
-      <a-input-search
-        placeholder="Pogo' da ara..."
-        @search="onSearch"
-        v-model="searchText"
-        size="large"
-        id="searchInput"
-        autoComplete="off"
-      />
+      <div class="search_input_wrap">
+        <a-input
+          placeholder="Pogo' da ara..."
+          @keyup.enter="onSearch"
+          v-model="searchText"
+          size="large"
+          id="searchInput"
+          autoComplete="off"
+          :style="{
+            background: GET_THEME
+              ? GET_COLORS.dark.backgroundLight
+              : GET_COLORS.light.backgroundLight,
+            color: GET_THEME
+              ? GET_COLORS.dark.textPrimary
+              : GET_COLORS.light.textPrimary
+          }"
+        />
+        <a-icon class="search_icon" type="search" @click="onSearch" />
+      </div>
       <div class="most_liked_posts">
         <Loader v-if="loading" />
         <!-- Arama sonuçlarının listesi -->
@@ -30,7 +47,14 @@
           @change-limit="lm => fetchMostLikes(lm)"
         />
       </div>
-      <a-layout-footer :style="{ textAlign: 'center' }">
+      <a-layout-footer
+        :style="{
+          textAlign: 'center',
+          color: GET_THEME
+            ? GET_COLORS.dark.textSecondary
+            : GET_COLORS.light.textSecondary
+        }"
+      >
         {{ `&copy; ${new Date().getFullYear()} POGO, Inc.` }}
       </a-layout-footer>
     </a-row>
@@ -59,7 +83,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["GET_POST_BY_LIKES", "GET_SEARCH_POSTS"])
+    ...mapGetters([
+      "GET_POST_BY_LIKES",
+      "GET_SEARCH_POSTS",
+      "GET_THEME",
+      "GET_COLORS"
+    ])
   },
   mounted() {
     // Beğeni sayısına göre sıralanmış gönderiler alınıyor

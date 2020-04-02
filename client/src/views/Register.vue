@@ -18,7 +18,19 @@
         />
       </div>
     </a-col>
-    <a-col :xs="{ span: 24 }" :md="{ span: 12 }" class="content">
+    <a-col
+      :xs="{ span: 24 }"
+      :md="{ span: 12 }"
+      class="content"
+      :style="{
+        background: GET_THEME
+          ? GET_COLORS.dark.background
+          : GET_COLORS.light.background,
+        color: GET_THEME
+          ? GET_COLORS.dark.textPrimary
+          : GET_COLORS.light.textPrimary
+      }"
+    >
       <!-- Yeni kullanıcı kayıt formu -->
       <a-form
         id="customForm"
@@ -29,7 +41,14 @@
       >
         <div class="form_header animated fadeInDown">
           <img src="../assets/logo.svg" alt="" />
-          <span>Pogo' ya hoşgeldin</span>
+          <span
+            :style="{
+              color: GET_THEME
+                ? GET_COLORS.dark.textPrimary
+                : GET_COLORS.light.textPrimary
+            }"
+            >Pogo' ya hoşgeldin</span
+          >
         </div>
         <div class="animated fadeInRight">
           <!-- Kullanıcı adı girme alanı -->
@@ -48,6 +67,14 @@
                 }
               ]"
               placeholder="Kullanıcı Adı"
+              :style="{
+                background: GET_THEME
+                  ? GET_COLORS.dark.backgroundLight
+                  : GET_COLORS.light.backgroundLight,
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary
+              }"
             />
           </a-form-item>
           <!-- Kullanıcı email adresi girme alanı -->
@@ -70,11 +97,19 @@
                 }
               ]"
               placeholder="Email"
+              :style="{
+                background: GET_THEME
+                  ? GET_COLORS.dark.backgroundLight
+                  : GET_COLORS.light.backgroundLight,
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary
+              }"
             />
           </a-form-item>
           <!-- Kullanıcı şifre girme alanı -->
           <a-form-item>
-            <a-input-password
+            <a-input
               size="large"
               v-decorator="[
                 'password',
@@ -89,11 +124,19 @@
               ]"
               type="password"
               placeholder="Şifre"
+              :style="{
+                background: GET_THEME
+                  ? GET_COLORS.dark.backgroundLight
+                  : GET_COLORS.light.backgroundLight,
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary
+              }"
             />
           </a-form-item>
           <!-- Kullanıcı şifre tekrar girme alanı -->
           <a-form-item>
-            <a-input-password
+            <a-input
               size="large"
               v-decorator="[
                 'password2',
@@ -111,6 +154,14 @@
               ]"
               type="password"
               placeholder="Şifre Tekrar"
+              :style="{
+                background: GET_THEME
+                  ? GET_COLORS.dark.backgroundLight
+                  : GET_COLORS.light.backgroundLight,
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary
+              }"
             />
           </a-form-item>
           <a-form-item>
@@ -122,7 +173,15 @@
             >
               Kayıt Ol
             </a-button>
-            hesabın varsa
+            <span
+              :style="{
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary
+              }"
+            >
+              hesabın varsa
+            </span>
             <router-link to="/login">
               giriş yap!
             </router-link>
@@ -145,6 +204,9 @@ export default {
   beforeCreate() {
     // Register formu oluşturuluyor ( ant desing vue formu )
     this.form = this.$form.createForm(this, { name: "registerForm" });
+  },
+  computed: {
+    ...mapGetters(["GET_THEME", "GET_COLORS"])
   },
   methods: {
     ...mapActions(["USER_REGISTER"]),

@@ -1,6 +1,23 @@
 <template>
-  <div class="logout_wrap animated fadeIn">
-    <div class="logout_content">
+  <div
+    class="logout_wrap animated fadeIn"
+    :style="{
+      background: GET_THEME
+        ? GET_COLORS.dark.backgroundLight
+        : GET_COLORS.light.backgroundLight
+    }"
+  >
+    <div
+      class="logout_content"
+      :style="{
+        background: GET_THEME
+          ? GET_COLORS.dark.background
+          : GET_COLORS.light.background,
+        color: GET_THEME
+          ? GET_COLORS.dark.textPrimary
+          : GET_COLORS.light.textPrimary
+      }"
+    >
       <img src="../assets/logo.svg" class="logout_img" />
       <p>Pogo' dan çıkmak üzeresin!</p>
       <span>İstediğin zaman tekrar giriş yapabilirsin.</span>
@@ -17,10 +34,13 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Logout",
+  computed: {
+    ...mapGetters(["GET_THEME", "GET_COLORS"])
+  },
   methods: {
     ...mapActions(["USER_LOGOUT"]),
     // Kullanıcıyı logout yapacak action tetikleniyor

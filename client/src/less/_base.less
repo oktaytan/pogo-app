@@ -54,13 +54,14 @@ body {
 
 .ant-layout {
 	background: @body-background;
-	border-left: 2px solid lighten(@body-background, 10%);
-	border-right: 2px solid lighten(@body-background, 10%);
+	// border-left: 2px solid lighten(@body-background, 10%);
+	// border-right: 2px solid lighten(@body-background, 10%);
 }
 
 .ant-layout-footer {
 	color: rgba(255, 255, 255, 0.5);
 	padding: 0 0 1rem 0;
+	background: transparent !important;
 }
 
 .ant-menu-dark.ant-menu-inline .ant-menu-item,
@@ -272,4 +273,25 @@ body {
 		);
 		animation: ant-skeleton-loading 1.4s ease infinite;
 	}
+}
+.ant-layout-sider-trigger {
+	cursor: pointer;
+	font-weight: bold;
+	font-size: 1rem;
+
+	i {
+		transition: color 0.2s ease-out;
+	}
+
+	&:hover i {
+		color: @primary-color;
+	}
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+	background: transparent;
+}
+
+.ant-menu-inline .ant-menu-item::after {
+	display: none;
 }

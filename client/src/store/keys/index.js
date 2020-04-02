@@ -54,9 +54,13 @@ export const GET_NEW_POST_LOADING = 'GET_NEW_POST_LOADING';
 // actions
 export const CHANGE_RIGHT_BAR_SHOW = 'CHANGE_RIGHT_BAR_SHOW';
 export const CHANGE_TOP_BAR_SHOW = 'CHANGE_TOP_BAR_SHOW';
+export const CHANGE_THEME = 'CHANGE_THEME';
 // mutations
 export const SET_RIGHT_BAR_SHOW = 'SET_RIGHT_BAR_SHOW';
 export const SET_TOP_BAR_SHOW = 'SET_TOP_BAR_SHOW';
+export const SET_THEME = 'SET_THEME';
 // getters
 export const GET_RIGHT_BAR_SHOW = 'GET_RIGHT_BAR_SHOW';
 export const GET_TOP_BAR_SHOW = 'GET_TOP_BAR_SHOW';
+export const GET_THEME = 'GET_THEME';
+export const GET_COLORS = 'GET_COLORS';

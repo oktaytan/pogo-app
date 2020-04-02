@@ -7,7 +7,7 @@ import (
 
 var VerifyToken = jwtmiddleware.New(jwtmiddleware.Options{
 	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-		mySigningKey := []byte("covid-19")
+		mySigningKey := []byte("EVDE-KAL")
 		return mySigningKey, nil
 	},
 

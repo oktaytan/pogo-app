@@ -18,7 +18,19 @@
         </div>
       </div>
     </a-col>
-    <a-col :xs="{ span: 24 }" :md="{ span: 12 }" class="content">
+    <a-col
+      :xs="{ span: 24 }"
+      :md="{ span: 12 }"
+      class="content"
+      :style="{
+        background: GET_THEME
+          ? GET_COLORS.dark.background
+          : GET_COLORS.light.background,
+        color: GET_THEME
+          ? GET_COLORS.dark.textPrimary
+          : GET_COLORS.light.textPrimary
+      }"
+    >
       <!-- Login formu -->
       <a-form
         id="customForm"
@@ -28,7 +40,14 @@
       >
         <div class="form_header animated fadeInDown">
           <img src="../assets/logo.svg" alt="" />
-          <span>Paylaşıma katıl</span>
+          <span
+            :style="{
+              color: GET_THEME
+                ? GET_COLORS.dark.textPrimary
+                : GET_COLORS.light.textPrimary
+            }"
+            >Paylaşıma katıl</span
+          >
         </div>
         <div class="animated fadeInRight">
           <!-- Kullanıcı adı girme alanı -->
@@ -47,11 +66,19 @@
                 }
               ]"
               placeholder="Kullanıcı Adı"
+              :style="{
+                background: GET_THEME
+                  ? GET_COLORS.dark.backgroundLight
+                  : GET_COLORS.light.backgroundLight,
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary
+              }"
             />
           </a-form-item>
           <!-- Kullanıcı şifre girme alanı -->
           <a-form-item>
-            <a-input-password
+            <a-input
               size="large"
               v-decorator="[
                 'password',
@@ -63,6 +90,14 @@
               ]"
               type="password"
               placeholder="Şifre"
+              :style="{
+                background: GET_THEME
+                  ? GET_COLORS.dark.backgroundLight
+                  : GET_COLORS.light.backgroundLight,
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary
+              }"
             />
           </a-form-item>
           <!-- Beni hatırla seçim alanı -->
@@ -75,6 +110,11 @@
                   initialValue: false
                 }
               ]"
+              :style="{
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary
+              }"
             >
               Beni Hatırla
             </a-checkbox>
@@ -82,11 +122,19 @@
               type="primary"
               html-type="submit"
               class="form_button"
+              :loading="loading"
               size="large"
             >
               Giriş yap
             </a-button>
-            ya da Pogo' ya
+            <span
+              :style="{
+                color: GET_THEME
+                  ? GET_COLORS.dark.textPrimary
+                  : GET_COLORS.light.textPrimary
+              }"
+              >ya da Pogo' ya</span
+            >
             <router-link to="/register">
               kayıt ol!
             </router-link>
@@ -135,6 +183,9 @@ export default {
       }
     });
   },
+  computed: {
+    ...mapGetters(["GET_THEME", "GET_COLORS"])
+  },
   methods: {
     ...mapActions(["USER_LOGIN"]),
     // login submit
@@ -175,7 +226,7 @@ export default {
             .then(res => {
               if (res.token) {
                 this.loading = true;
-                this.$message.loading("Giriş yapılıyor", 1).then(() => {
+                this.$message.loading("Giriş yapılıyor", 0.5).then(() => {
                   this.loading = false;
                   this.$router.push("/");
                 });
