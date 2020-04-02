@@ -221,15 +221,15 @@ export default {
             password: values.password
           };
 
+          this.loading = true;
+
           // Login yapacak action tetikleniyor
           this.USER_LOGIN(user)
             .then(res => {
               if (res.token) {
-                this.loading = true;
-                this.$message.loading("Giriş yapılıyor", 0.5).then(() => {
-                  this.loading = false;
-                  this.$router.push("/");
-                });
+                this.loading = false;
+                this.$router.push("/prepare");
+                // this.$message.loading("Giriş yapılıyor", 0.5).then(() => {});
               }
             })
             .catch(err => {

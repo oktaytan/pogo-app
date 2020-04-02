@@ -6,6 +6,7 @@ import Login from '../views/Login.vue';
 import Logout from '../views/Logout.vue';
 import Register from '../views/Register.vue';
 import NotFound from '../views/NotFound.vue';
+import Prepare from '../views/Prepare.vue';
 import Settings from '../components/Settings.vue';
 import Profile from '../components/Profile.vue';
 import PostDetail from '../components/PostDetail.vue';
@@ -38,6 +39,12 @@ const routes = [
 				meta: { requiresAuth: true }
 			}
 		]
+	},
+	{
+		path: '/prepare',
+		name: 'prepare',
+		component: Prepare,
+		meta: { noLogin: true }
 	},
 	{
 		path: '/login',

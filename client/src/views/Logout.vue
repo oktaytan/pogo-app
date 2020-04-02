@@ -49,6 +49,9 @@ export default {
         .then(res => {
           // Kullanıcı bilgileri token ile birlikte localStorage ekleniyor
           localStorage.removeItem("pogo_user");
+          if (localStorage.getItem("pogo_reloaded")) {
+            localStorage.removeItem("pogo_reloaded");
+          }
           // Kullanıcı login sayfasına yönlendiriliyor.
           this.$router.push("/login");
         })
