@@ -30,8 +30,8 @@
           ? GET_COLORS.dark.background
           : GET_COLORS.light.background,
         color: GET_THEME
-          ? GET_COLORS.dark.textPrimary
-          : GET_COLORS.light.textPrimary,
+          ? GET_COLORS.dark.textSecondary
+          : GET_COLORS.light.textSecondary,
         fontWeight: 'bold'
       }"
     >

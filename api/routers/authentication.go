@@ -17,7 +17,7 @@ func SetAuthenticationRoutes(router *mux.Router) *mux.Router {
 	// User login
 	router.Handle("/api/login", negroni.New(negroni.WrapFunc(c.Login))).Methods("POST")
 	// User logout
-	router.Handle("/api/logout", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.Logout))).Methods("GET")
+	router.Handle("/api/logout", negroni.New(negroni.WrapFunc(c.Logout))).Methods("GET")
 
 	return router
 }

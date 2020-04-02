@@ -143,7 +143,7 @@
 		&_view {
 			overflow-x: hidden;
 			overflow-y: scroll;
-			min-height: 50vh;
+			min-height: 70vh;
 		}
 	}
 }
@@ -220,6 +220,10 @@
 
 		&:hover {
 			background: rgba(lighten(@body-background, 40%), 0.1);
+		}
+
+		&:last-child {
+			border-bottom: none !important;
 		}
 	}
 
@@ -629,7 +633,7 @@
 	}
 
 	.ant-modal-footer {
-		border-top: 2px solid lighten(#bcccdc, 3%);
+		// border-top: 2px solid lighten(#bcccdc, 3%);
 
 		.ant-btn {
 			border: none;
