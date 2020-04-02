@@ -99,8 +99,53 @@
 
 ## Start
 
-- Projeyi başlatmak için kök dizindeyken
+- Backend başlatmak için
+
+> localhost:5000 portundan çalışır
+
+```bash
+  npm run go:start
+```
+
+- Frontend başlatmak için
+
+> localhost:8080 portundan çalışır
+
+```bash
+  npm run vue:start
+```
+
+- Projeyi tek seferde başlatmak için
 
 ```bash
   npm start
 ```
+
+---
+
+## Endpoints
+
+> http://localhost:5000/api - server
+
+| Endpoint         | Method | Description                    |
+| ---------------- | ------ | ------------------------------ |
+| /users           | GET    | Tüm kullanıcılar               |
+| /login           | POST   | Kullanıcı girişi               |
+| /logout          | GET    | Kullanıcı çıkışı               |
+| /register        | POST   | Kullanıcı kaydı                |
+| -------------    | ------ | --------------------------     |
+| /posts           | GET    | Tüm postlar                    |
+| /posts/liked     | GET    | En çok beğeni alan postlar     |
+| /:username/posts | GET    | Kullanıcının postları          |
+| /posts/:id       | GET    | ID' ye göre post getirme       |
+| /posts/search    | POST   | Postlarda arama yapma          |
+| /posts           | POST   | Post ekleme                    |
+| /posts/:id       | PUT    | Post güncelleme (beğeni yapma) |
+| /posts/:id       | DELETE | Post silme                     |
+| -------------    | ------ | --------------------------     |
+| /comments        | GET    | Tüm yorumlar                   |
+| /comments        | POST   | Yorum ekleme                   |
+| /comments/:id    | DELETE | Yorum silme                    |
+| -------------    | ------ | --------------------------     |
+| /likes           | GET    | Tüm beğeniler                  |
+| /likes/:user_id  | GET    | Kullanıcının beğenileri        |

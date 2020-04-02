@@ -4,9 +4,9 @@
 	"description": "Gönderi paylaşımı platformu",
 	"main": "index.js",
 	"scripts": {
-		"go:run": "cd api && go run main.go",
-		"vue:run": "npm run serve --prefix client",
-		"start": "concurrently \"npm run go:run\" \"npm run vue:run\""
+		"go:start": "cd api && go run main.go",
+		"vue:start": "npm run serve --prefix client",
+		"start": "concurrently \"npm run go:start\" \"npm run vue:start\""
 	},
 	"keywords": [],
 	"author": "Oktay Tanrıkulu",
