@@ -17,9 +17,9 @@ func SetPostRoutes(router *mux.Router) *mux.Router {
 	// Get most liked posts
 	router.Handle("/api/posts/liked/{limit}", negroni.New(negroni.WrapFunc(c.MostLikedPosts))).Methods("GET")
 	// Get post by id
-	router.Handle("/api/posts/{id}", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.GetPost))).Methods("GET")
+	router.Handle("/api/posts/{id}", negroni.New(negroni.WrapFunc(c.GetPost))).Methods("GET")
 	// Create Post
-	router.Handle("/api/posts", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.CreatePost))).Methods("POST")
+	router.Handle("/api/posts", negroni.New(negroni.WrapFunc(c.CreatePost))).Methods("POST")
 	// Search Post
 	router.Handle("/api/posts/search", negroni.New(negroni.HandlerFunc(v.VerifyToken.HandlerWithNext), negroni.WrapFunc(c.SearchPosts))).Methods("POST")
 	// Like Post
