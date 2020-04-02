@@ -1,12 +1,15 @@
 {
-  "name": "pogo",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+	"name": "pogo",
+	"version": "1.0.0",
+	"description": "Gönderi paylaşımı platformu",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "Oktay Tanrıkulu",
+	"license": "ISC",
+	"dependencies": {
+		"concurrently": "^5.1.0"
+	}
 }
