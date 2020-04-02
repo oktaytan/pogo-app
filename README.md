@@ -99,26 +99,18 @@
 
 ## Start
 
-- Backend başlatmak için
-
-> localhost:5000 portundan çalışır
+> Server / API ---> localhost:5000
 
 ```bash
-  npm run go:start
+  cd api
+  go run main.go
 ```
 
-- Frontend başlatmak için
-
-> localhost:8080 portundan çalışır
+> Client ---> localhost:8080
 
 ```bash
-  npm run vue:start
-```
-
-- Projeyi tek seferde başlatmak için
-
-```bash
-  npm start
+  cd client
+  npm run serve
 ```
 
 ---
