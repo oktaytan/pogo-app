@@ -125,7 +125,7 @@
 
 ## Endpoints
 
-> http://localhost:5000/api - server
+> Server ---> http://localhost:5000/api
 
 | Endpoint         | Method | Description                    |
 | ---------------- | ------ | ------------------------------ |
