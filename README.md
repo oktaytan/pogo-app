@@ -22,6 +22,8 @@
 
 ## Install
 
+> Projeyi indirmek için
+
 ```bash
   git clone https://github.com/oktaytan/pogo-app.git
 ```
@@ -35,7 +37,7 @@
   go get
 ```
 
-> ya da manuel olarak yüklemek için
+> hata oluşması durumunda manuel olarak yüklemek için
 
 - HTTP router
 
