@@ -81,6 +81,13 @@
 
 ### Frontend bağımlılıkları
 
+> Bağımlılıkları tek seferde yüklemek için
+
+```bash
+  cd client
+  npm install
+```
+
 - Vue.js
 - vue-router (Vue için router)
 - vuex ( State management )
@@ -89,11 +96,6 @@
 - axios ( Http istekleri yapmak için )
 - moment ( Tarih ve zaman formatlama için )
 - vue-textarea-autosize ( Custom textarea )
-
-```bash
-  cd client
-  npm install
-```
 
 ---
 
@@ -117,7 +119,7 @@
 
 ## Endpoints
 
-> Server ---> http://localhost:5000/api
+> Server / API ---> http://localhost:5000/api
 
 | Endpoint         | Method | Description                    |
 | ---------------- | ------ | ------------------------------ |
